@@ -26,13 +26,15 @@ const props = defineProps({
   scope: String
 });
 
+
 const acepto = ref({
   codigo: props.actual.codigo,
   nombre_cliente: props.actual.nombre_cliente,
   fecha_acepto: '',
   hora_acepto: '',
   precio: '',
-  comentarios: ''
+  comentarios: '',
+  ambito: props.actual.ambito
 });
 
 const ambito = ref(props.scope);
@@ -44,7 +46,8 @@ const gestiones = ref({
   fecha: '',
   hora: '',
   comentarios: '',
-  tipo :''
+  tipo :'',
+  ambito: props.actual.ambito
 });
 
 const reset_acepto = () => {
@@ -87,8 +90,7 @@ isOpencompetencia.value = false;
 
 const submitAcepto = async () => {
   try {
-    
-    acepto.value.ambito = ambito.value;
+    console.log(acepto);
 
     const response = await axios.post('/gestion_acepto', acepto.value);
     console.log('Datos enviados con éxito:', response.data);

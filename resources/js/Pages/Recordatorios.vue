@@ -76,8 +76,6 @@ const llamsemana = ref([]);
 
 const mostrar_gestion = async (id, id_llamada) =>{
 
-  
-
   fetchComentarios(id);
   fetchPasadas(id);
 
