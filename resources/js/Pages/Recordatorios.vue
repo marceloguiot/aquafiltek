@@ -22,6 +22,7 @@ const categories = ref({
 
 
 const comentarios = ref([]);
+const gestionesPast = ref([]);
 
 
       const fetchComentarios = async (id) => {
@@ -40,6 +41,21 @@ const comentarios = ref([]);
     
   }
 };
+
+const fetchPasadas = async (id) => {
+  const data = { id: id };
+  try {
+    const response = await axios.post(route('getPasadas'), data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    gestionesPast.value = response.data;
+  } catch (err) {
+    console.error(err);
+    
+  }
+}
 
 const getLlamadas = async () =>{
   const response = await axios.post(route('getLlamadas'), {
@@ -63,6 +79,7 @@ const mostrar_gestion = async (id, id_llamada) =>{
   
 
   fetchComentarios(id);
+  fetchPasadas(id);
 
   const data = { id: id };
   const response = await axios.post(route('getDataClient'), data, {
@@ -180,7 +197,7 @@ onBeforeMount(getLlamadas);
                 <div class="flex flex-col w-5/6 mx-auto" v-show="show_gestion">
                 <ModalGestion  :actual="actual" :scope="llamadas" :key="actual" />
                 <div class="flex flex-col">
-                <ClienteInfo :actual="actual" :key="actual" />
+                <ClienteInfo :actual="actual" :key="actual" :ventas="gestionesPast" />
                 </div>
                 <ComentariosHistorico :items="comentarios" />
                 </div>

@@ -137,4 +137,15 @@ class GestionController extends Controller
         ]);
     }
 
+    public function getFilteredGestiones(Request $request)
+    {
+        // Filtrar los registros por el campo 'codigo' y seleccionar los campos requeridos
+        $gestiones = GestionAceptada::where('codigo', $request->id)
+            ->select('fecha_acepto', 'hora_acepto', 'precio')
+            ->get();
+
+        // Devolver los datos en formato JSON
+        return response()->json($gestiones);
+    }
+
 }

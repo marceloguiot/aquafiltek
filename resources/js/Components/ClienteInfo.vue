@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 const props = defineProps({
-  actual: Object
+  actual: Object,
+  ventas: Array
 });
 
 </script>
@@ -24,7 +25,14 @@ const props = defineProps({
                 </thead>
                 <tbody>
                     <tr class="bg-slate-800">
-                        <td class="text-white border"></td>
+                        <td class="text-white border">
+                            <div class="flex flex-col">
+                                <div v-for="element in props.ventas" class="text-sm">
+                                    {{ element.fecha_acepto }} - ${{ element.precio }} <span class="hover:cursor-pointer">editar</span>
+                                </div>
+
+                            </div>
+                        </td>
                         <td class="text-white border">{{ props.actual.nombre_cliente }}</td>
                         <td class="text-white border">{{ props.actual.datos_factura }}</td>
                         <td class="text-white border text-sm w-[25%]">{{ props.actual.direccion }}</td>

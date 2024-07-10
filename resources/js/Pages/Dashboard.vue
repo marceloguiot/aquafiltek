@@ -15,6 +15,7 @@ const datos = ref(props.datos);
 
 const actual = ref(datos.value[3]);
 const comentarios = ref([]);
+const gestionesPast = ref([]);
 
 
       const fetchComentarios = async () => {
@@ -34,7 +35,23 @@ const comentarios = ref([]);
   }
 };
 
+const fetchPasadas = async () => {
+  const data = { id: actual.value.codigo };
+  try {
+    const response = await axios.post(route('getPasadas'), data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    gestionesPast.value = response.data;
+  } catch (err) {
+    console.error(err);
+    
+  }
+}
+
       onBeforeMount(fetchComentarios);
+      onBeforeMount(fetchPasadas);
 
 </script>
 
@@ -65,7 +82,7 @@ const comentarios = ref([]);
                 </div>
                 <ModalGestion  :actual="actual" :scope="gestion" />
                 <div class="flex flex-col">
-                <ClienteInfo :actual="actual" />
+                <ClienteInfo :actual="actual" :ventas="gestionesPast" />
                 </div>
                 <ComentariosHistorico :items="comentarios" />
             </div>

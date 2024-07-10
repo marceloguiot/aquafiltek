@@ -38,6 +38,7 @@ Route::post('/gestion',[GestionController::class, 'otras'])->middleware(['auth',
 Route::post('/getDataClient',[ClienteController::class, 'getData'])->middleware(['auth', 'verified'])->name('getDataClient');
 Route::post('/getComentarios',[ClienteController::class, 'getComentarios'])->middleware(['auth', 'verified'])->name('getComentarios');
 Route::post('/getLlamadas',[GestionController::class, 'getLlamadas'])->middleware(['auth', 'verified'])->name('getLlamadas');
+Route::post('/getPasadas',[GestionController::class, 'getFilteredGestiones'])->middleware(['auth', 'verified'])->name('getPasadas');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
