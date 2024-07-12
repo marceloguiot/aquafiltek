@@ -29,6 +29,7 @@ Route::get('/busqueda', function () { return Inertia::render('Motivacion');})->m
 Route::get('/calendario', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('calendario');
 Route::get('/mapa', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('mapa');
 Route::get('/gestion_calendario', function () { return Inertia::render('GestionCalendario');})->middleware(['auth', 'verified'])->name('gestion_calendario');
+Route::get('/llamadas/upcoming', [GestionController::class, 'getUpcomingLlamadas'])->name('llamadas.upcoming');
 
 //metodo POST
 

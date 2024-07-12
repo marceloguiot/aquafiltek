@@ -20,8 +20,8 @@ class GestionController extends Controller
     public function index(){
          // Retrieve the first seven matching records
          $clientes = Cliente::where('inactivo', 0)
-         ->where('estado', 'Volver a llamar')
-         ->where('id', '>', 894)
+         ->where('estado', 'Por gestionar')
+         //->where('id', '>', 894)
          ->orderBy('id')
          ->limit(7)
          ->get();
@@ -158,6 +158,31 @@ class GestionController extends Controller
             'llamadasVencidas' => $llamadasVencidas
         ]);
     }
+
+    public function getUpcomingLlamadas()
+    {
+        $timezone = 'America/Mexico_City';
+        $currentDate = Carbon::now($timezone)->toDateString();
+        $currentTime = Carbon::now($timezone)->toTimeString();
+        $timeWindowStart = Carbon::now($timezone)->subMinutes(5)->toTimeString();
+        $timeWindowEnd = Carbon::now($timezone)->addMinutes(5)->toTimeString();
+        
+        
+
+        // Filtrar los registros que cumplen las condiciones
+        $llamadas = LlamadasProgramadas::where('fecha_llamada', $currentDate)
+            ->where('hora_llamada', '>=', $timeWindowStart)
+            ->where('hora_llamada', '<=', $timeWindowEnd)
+            ->where('realizada', 0)
+            ->where('id_operador', 1)
+            ->get();
+
+        // Devolver los datos en formato JSON
+        return response()->json($llamadas);
+    }
+
+
+
 
     public function getFilteredGestiones(Request $request)
     {

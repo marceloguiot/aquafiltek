@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeMount, onMounted } from 'vue'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
@@ -9,13 +9,43 @@ import ClienteInfo from '@/Components/ClienteInfo.vue';
 import ComentariosHistorico from '@/Components/ComentariosHistorico.vue';
 import { usePage } from '@inertiajs/vue3';
 
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from '@headlessui/vue';
+
 const { props } = usePage();
+const isOpenLlamada = ref(false);
 
 const datos = ref(props.datos);
 
 const actual = ref(datos.value[3]);
 const comentarios = ref([]);
 const gestionesPast = ref([]);
+const upcomingLlamadas = ref([]);
+
+const fetchUpcomingLlamadas = async () => {
+  try {
+    const response = await axios.get('/llamadas/upcoming');
+    upcomingLlamadas.value = response.data;
+    console.log(response.data);
+    if(response.data.length > 0)
+    {
+      isOpenLlamada.value = true;
+    }
+  } catch (error) {
+    console.error('Error fetching upcoming llamadas:', error);
+  }
+};
+
+// Fetch upcoming llamadas every minute
+onMounted(() => {
+  fetchUpcomingLlamadas(); // Fetch on mount
+  setInterval(fetchUpcomingLlamadas, 60000); // Fetch every minute
+});
 
 
       const fetchComentarios = async () => {
@@ -48,6 +78,10 @@ const fetchPasadas = async () => {
     console.error(err);
     
   }
+}
+
+function closeModal() {
+  isOpenLlamada.value = false;
 }
 
       onBeforeMount(fetchComentarios);
@@ -90,5 +124,66 @@ const fetchPasadas = async () => {
     </AuthenticatedLayout>
 
 
+    <TransitionRoot appear :show="isOpenLlamada" as="template">
+    <Dialog as="div" @close="closeModal" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black/25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-[50%] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h3"
+                class="text-2xl font-bold text-blue-500"
+              >
+                Llamadas proximas a realizarse
+              </DialogTitle>
+              <div class="mt-2">
+              <div class="flex flex-col" v-for="item in upcomingLlamadas">
+                <div class="mb-4">
+            <label for="nombre_cliente" class="block text-gray-700 text-sm font-bold mb-2">Nombre del cliente</label>
+            {{ item.codigo }}
+              </div>
+
+        <div class="mb-4">
+          {{ item.fecha_llamada }}
+          {{ item.hora_llamada }}
+        </div>
+
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Guardar</button>
+        </div>
+              </div>
+              </div>
+              <div class="flex justify-center mt-16">
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
     
 </template>
