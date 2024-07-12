@@ -88,6 +88,7 @@ const mostrar_gestion = async (id, id_llamada) =>{
     
     actual.value = response.data;
     actual.value.id_llamada = id_llamada;
+    console.log(actual.value);
 
   show_gestion.value = true;
 }
@@ -193,7 +194,7 @@ onBeforeMount(getLlamadas);
     </TabGroup>
 
                 <div class="flex flex-col w-5/6 mx-auto" v-show="show_gestion">
-                <ModalGestion  :actual="actual" :scope="llamadas" :key="actual" />
+                <ModalGestion  :actual="actual" :scope="'llamadas'" :key="actual" />
                 <div class="flex flex-col">
                 <ClienteInfo :actual="actual" :key="actual" :ventas="gestionesPast" />
                 </div>

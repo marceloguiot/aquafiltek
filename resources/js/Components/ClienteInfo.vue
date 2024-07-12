@@ -1,9 +1,23 @@
 <script setup>
 import { ref } from 'vue';
+
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from '@headlessui/vue';
 const props = defineProps({
   actual: Object,
   ventas: Array
 });
+
+const isOpenedp = ref(false);
+
+const editar_precio = () =>{
+
+}
 
 </script>
 <template>
@@ -28,7 +42,7 @@ const props = defineProps({
                         <td class="text-white border">
                             <div class="flex flex-col">
                                 <div v-for="element in props.ventas" class="text-sm">
-                                    {{ element.fecha_acepto }} - ${{ element.precio }} <span class="hover:cursor-pointer">editar</span>
+                                    {{ element.fecha_acepto }} - ${{ element.precio }} <span class="hover:cursor-pointer" @click="editar_precio()">editar</span>
                                 </div>
 
                             </div>
@@ -56,4 +70,72 @@ const props = defineProps({
                     </tr>
                 </tbody>
                 </table>
+                <TransitionRoot appear :show="isOpenedp" as="template">
+    <Dialog as="div" @close="closeModalInspeccion" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black/25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-[50%] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h3"
+                class="text-2xl font-bold text-blue-500"
+              >
+                Editar precio aceptado
+              </DialogTitle>
+              <div class="mt-2">
+              <div class="flex flex-col">
+                <form @submit.prevent="submitGestion('inspeccion')">
+                <div class="mb-4">
+            <label for="nombre_cliente" class="block text-gray-700 text-sm font-bold mb-2">Nombre del cliente</label>
+            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.nombre_cliente"  required readonly>
+        </div>
+
+        <div class="mb-4">
+            <label for="fecha_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Nuevo precio</label>
+            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.fecha" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="comentarios_adicionales" class="block text-gray-700 text-sm font-bold mb-2">Comentarios</label>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.comentarios" rows="4"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Guardar</button>
+        </div>
+              </form>
+              </div>
+              </div>
+              <div class="flex justify-center mt-16">
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
 </template>

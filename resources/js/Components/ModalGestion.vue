@@ -27,17 +27,15 @@ const props = defineProps({
 });
 
 
-const acepto = ref({
+  const acepto = ref({
   codigo: props.actual.codigo,
   nombre_cliente: props.actual.nombre_cliente,
   fecha_acepto: '',
   hora_acepto: '',
   precio: '',
   comentarios: '',
-  ambito: props.actual.ambito
+  ambito: props.scope
 });
-
-const ambito = ref(props.scope);
 
 
 const gestiones = ref({
@@ -47,8 +45,14 @@ const gestiones = ref({
   hora: '',
   comentarios: '',
   tipo :'',
-  ambito: props.actual.ambito
+  ambito: props.scope
 });
+
+if(props.scope == 'llamadas'){
+  acepto.value.id_llamada = props.actual.id_llamada;
+  gestiones.value.id_llamada = props.actual.id_llamada;
+}
+
 
 const reset_acepto = () => {
   isOpenacepto.value = false;
@@ -90,7 +94,7 @@ isOpencompetencia.value = false;
 
 const submitAcepto = async () => {
   try {
-    console.log(acepto);
+
 
     const response = await axios.post('/gestion_acepto', acepto.value);
     console.log('Datos enviados con éxito:', response.data);
@@ -104,10 +108,7 @@ const submitAcepto = async () => {
 
 const submitGestion = async (tipo) => {
   try {
-
-    gestiones.value.ambito = ambito.value;
     gestiones.value.tipo = tipo;
-    
     const response = await axios.post('/gestion', gestiones.value);
     console.log('Datos enviados con éxito:', response.data);
     reset_gestiones();

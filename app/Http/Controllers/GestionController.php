@@ -47,6 +47,15 @@ class GestionController extends Controller
          $comentario['hora_gestion'] = date("h:i:s");
          Comentarios::create($comentario);
 
+         if($request->ambito == 'llamadas')
+         {
+             $llamada = LlamadasProgramadas::find($request->id_llamada);
+  
+             // Actualizar el campo 'realizada' a 1
+             $llamada->realizada = 1;
+             $llamada->save();
+         }
+
         return $request;
         }
         catch(Error $e){
@@ -90,6 +99,17 @@ class GestionController extends Controller
         Comentarios::create($comentario);
 
 
+        if($request->ambito == 'llamadas')
+        {
+            $llamada = LlamadasProgramadas::find($request->id_llamada);
+ 
+            // Actualizar el campo 'realizada' a 1
+            $llamada->realizada = 1;
+            $llamada->save();
+        }
+
+
+
 
         return $request;
         }
@@ -112,6 +132,7 @@ class GestionController extends Controller
         // Retrieve records and join with clientes table to get nombre_cliente
         $llamadas = LlamadasProgramadas::select('llamadas_programadas.*', 'clientes.nombre_cliente')
             ->join('clientes', 'llamadas_programadas.codigo', '=', 'clientes.codigo')
+            ->where('llamadas_programadas.realizada', '=', 0)
             ->whereBetween('llamadas_programadas.fecha_llamada', [$today, $sevenDaysAhead])
             ->get();
 
@@ -119,6 +140,7 @@ class GestionController extends Controller
             ->join('clientes', 'llamadas_programadas.codigo', '=', 'clientes.codigo')
             ->where('llamadas_programadas.fecha_llamada', '>=', $twoDaysAgo->toDateString())
             ->where('llamadas_programadas.fecha_llamada', '<', $today)
+            ->where('llamadas_programadas.realizada', '=', 0)
             /*
             ->where(function($query) use ($twoDaysAgo) {
                 $query->where('llamadas_programadas.fecha_llamada', '>', $twoDaysAgo->toDateString())

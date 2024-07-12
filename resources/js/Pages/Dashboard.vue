@@ -80,7 +80,7 @@ const fetchPasadas = async () => {
                         <div v-else class="h-12 text-sm bg-yellow-400 text-center content-center border">{{ dat.estado }}</div>
                     </div>
                 </div>
-                <ModalGestion  :actual="actual" :scope="gestion" />
+                <ModalGestion  :actual="actual" :scope="'gestion'" />
                 <div class="flex flex-col">
                 <ClienteInfo :actual="actual" :ventas="gestionesPast" />
                 </div>
