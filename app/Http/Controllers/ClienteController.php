@@ -54,7 +54,10 @@ class ClienteController extends Controller
     }
     public function getComentarios(Request $request){
          // Retrieve the client by codigo
-         $comentarios = Comentarios::where('id_cliente', $request->input('id'))->get();
+         $comentarios = Comentarios::where('id_cliente', $request->input('id'))
+         ->orderBy('fecha_gestion', 'desc')
+         ->orderBy('hora_gestion', 'desc')
+         ->get();
          return response()->json($comentarios, 200);
     }
 }

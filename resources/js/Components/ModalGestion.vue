@@ -10,6 +10,7 @@ import {
 import { ref, computed, reactive, onBeforeUnmount } from 'vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
+import { defineEmits } from 'vue';
 
 const isOpenacepto = ref(false);
 const isOpeninspeccion = ref(false);
@@ -20,6 +21,8 @@ const isOpenrechazo = ref(false);
 const isOpenaveriado = ref(false);
 const isOpencompetencia = ref(false);
 
+
+const emit = defineEmits(['updateEjecutado']);
 
 const props = defineProps({
   actual: Object,
@@ -98,6 +101,7 @@ const submitAcepto = async () => {
 
     const response = await axios.post('/gestion_acepto', acepto.value);
     console.log('Datos enviados con éxito:', response.data);
+    emit('updateEjecutado', 'true');
     reset_acepto();
     
   } catch (error) {
@@ -111,6 +115,7 @@ const submitGestion = async (tipo) => {
     gestiones.value.tipo = tipo;
     const response = await axios.post('/gestion', gestiones.value);
     console.log('Datos enviados con éxito:', response.data);
+    emit('updateEjecutado', 'true');
     reset_gestiones();
     
   } catch (error) {

@@ -13,12 +13,42 @@ const props = defineProps({
   ventas: Array
 });
 
+const precio = ref({
+  id_gestion: '',
+  codigo:'',
+  nombre_cliente:'',
+  precio_ant: '',
+  precio_act: '',
+  motivo: ''
+});
+
 const isOpenedp = ref(false);
 
-const editar_precio = () =>{
+const editar_precio = (gestion) =>{
+  precio.value.id_gestion = gestion.id;
+  precio.value.codigo = gestion.codigo;
+  precio.value.precio_ant = gestion.precio;
+  precio.value.nombre_cliente = gestion.nombre_cliente;
+  isOpenedp.value = true;
 
 }
 
+function closeModalPrecio() {
+  isOpenedp.value = false;
+}
+
+const submitPrecio = async () =>{
+  try {
+    const response = await axios.post('/edprecio', precio.value);
+    console.log('Datos enviados con éxito:', response.data);
+    reset_gestiones();
+    
+  } catch (error) {
+    console.error('Error al enviar los datos:', error);
+  }
+
+
+}
 </script>
 <template>
                     <table class="table-fixed">
@@ -38,11 +68,11 @@ const editar_precio = () =>{
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="bg-slate-800">
+                    <tr class="bg-slate-600">
                         <td class="text-white border">
                             <div class="flex flex-col">
                                 <div v-for="element in props.ventas" class="text-sm">
-                                    {{ element.fecha_acepto }} - ${{ element.precio }} <span class="hover:cursor-pointer" @click="editar_precio()">editar</span>
+                                    {{ element.fecha_acepto }} - ${{ element.precio }} <span class="hover:cursor-pointer text-blue-400" @click="editar_precio(element)">editar</span>
                                 </div>
 
                             </div>
@@ -71,7 +101,7 @@ const editar_precio = () =>{
                 </tbody>
                 </table>
                 <TransitionRoot appear :show="isOpenedp" as="template">
-    <Dialog as="div" @close="closeModalInspeccion" class="relative z-10">
+    <Dialog as="div" @close="closeModalPrecio" class="relative z-10">
       <TransitionChild
         as="template"
         enter="duration-300 ease-out"
@@ -108,20 +138,20 @@ const editar_precio = () =>{
               </DialogTitle>
               <div class="mt-2">
               <div class="flex flex-col">
-                <form @submit.prevent="submitGestion('inspeccion')">
+                <form @submit.prevent="submitPrecio()">
                 <div class="mb-4">
             <label for="nombre_cliente" class="block text-gray-700 text-sm font-bold mb-2">Nombre del cliente</label>
-            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.nombre_cliente"  required readonly>
+            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="precio.nombre_cliente"  required readonly>
         </div>
 
         <div class="mb-4">
             <label for="fecha_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Nuevo precio</label>
-            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.fecha" required>
+            <input type="number" min="1" max="10000" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="precio.precio_act"  required>
         </div>
 
         <div class="mb-4">
             <label for="comentarios_adicionales" class="block text-gray-700 text-sm font-bold mb-2">Comentarios</label>
-            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.comentarios" rows="4"></textarea>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="precio.motivo"  rows="4"></textarea>
         </div>
 
         <div class="flex items-center justify-between">

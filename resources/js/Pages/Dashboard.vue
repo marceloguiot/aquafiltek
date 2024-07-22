@@ -41,6 +41,13 @@ const fetchUpcomingLlamadas = async () => {
   }
 };
 
+const handleUpdateEjecutado = (ejecutado) => {
+  if(ejecutado == 'true')
+{
+  window.location.reload();
+}
+};
+
 // Fetch upcoming llamadas every minute
 onMounted(() => {
   fetchUpcomingLlamadas(); // Fetch on mount
@@ -105,16 +112,20 @@ function closeModal() {
 
                     <div v-for="(dat, index) in datos" class="h-42 w-[14%] flex flex-col">
                         <div v-if="index == 3" class="h-16 text-xs bg-teal-500 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
-                        <div v-else class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
-
+                        <div v-else-if="index < 3" class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
+                        <div v-else class="h-16 text-xs bg-orange-400 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
+                        
                         <div v-if="index == 3" class="h-20 text-sm bg-teal-500 text-center content-center border">{{ dat.nombre_cliente}}</div>
-                        <div v-else class="h-20 text-sm bg-yellow-400 text-center content-center border">{{ dat.nombre_cliente}}</div>
-
+                        <div v-else-if="index < 3" class="h-20 text-sm bg-yellow-400 text-center content-center border">{{ dat.nombre_cliente}}</div>
+                        <div v-else class="h-20 text-sm bg-orange-400 text-center content-center border">{{ dat.nombre_cliente}}</div>
+        
                         <div v-if="index == 3" class="h-12 text-sm bg-teal-500 text-center content-center border">{{ dat.estado }}</div>
-                        <div v-else class="h-12 text-sm bg-yellow-400 text-center content-center border">{{ dat.estado }}</div>
+                        <div v-else-if="index < 3" class="h-12 text-sm bg-yellow-400 text-center content-center border">{{ dat.estado }}</div>
+                        <div v-else class="h-12 text-sm bg-orange-400 text-center content-center border">{{ dat.estado }}</div>
+                
                     </div>
                 </div>
-                <ModalGestion  :actual="actual" :scope="'gestion'" />
+                <ModalGestion  :actual="actual" :scope="'gestion'" @updateEjecutado="handleUpdateEjecutado" />
                 <div class="flex flex-col">
                 <ClienteInfo :actual="actual" :ventas="gestionesPast" />
                 </div>
@@ -152,7 +163,7 @@ function closeModal() {
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-[50%] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+              class="w-full max-w-[80%] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
             >
               <DialogTitle
                 as="h3"
@@ -162,19 +173,33 @@ function closeModal() {
               </DialogTitle>
               <div class="mt-2">
               <div class="flex flex-col" v-for="item in upcomingLlamadas">
-                <div class="mb-4">
-            <label for="nombre_cliente" class="block text-gray-700 text-sm font-bold mb-2">Nombre del cliente</label>
-            {{ item.codigo }}
-              </div>
+                <div class="mb-4 justify-center">
+                  <table class="w-[98%] mt-10">
+                    <thead>
+                      <tr>
+                        <th class="w-[33%] border border-slate-600 p-1 bg-slate-200">Nombre del cliente</th>
+                        <th class="w-[25%] text-center border border-slate-600 p-1 bg-slate-200">Fecha de llamada</th>
+                        <th class="w-[25%] text-center border border-slate-600 p-1 bg-slate-200">Hora de llamada</th>
+                        <th class="w-[17%] text-center border border-slate-600 p-1 bg-slate-200">Opción</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td class="border border-slate-300">{{ item.codigo }}</td>
+                      <td class="border border-slate-300 text-center">{{ item.fecha_llamada }}</td>
+                      <td class="border border-slate-300 text-center">{{ item.hora_llamada }}</td>
+                      <td class="border border-slate-300 text-center py-2"> <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">ir a llamada</button>
+                      </td>
 
-        <div class="mb-4">
-          {{ item.fecha_llamada }}
-          {{ item.hora_llamada }}
-        </div>
 
-        <div class="flex items-center justify-between">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Guardar</button>
-        </div>
+                    </tbody>
+                  </table>
+                  <div class="flex mt-10">
+                  
+                  <a :href="route('recordatorios')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                    Ir a recordatorios
+                                </a>
+                  </div>
+                   </div>
               </div>
               </div>
               <div class="flex justify-center mt-16">

@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Models\Cliente;
 use App\Models\GestionAceptada;
 use App\Models\Gestion;
+use App\Models\HistorialPrecio;
 use App\Models\LlamadasProgramadas;
 use App\Models\Comentarios;
 use Carbon\Carbon;
@@ -20,8 +21,8 @@ class GestionController extends Controller
     public function index(){
          // Retrieve the first seven matching records
          $clientes = Cliente::where('inactivo', 0)
-         ->where('estado', 'Por gestionar')
-         //->where('id', '>', 894)
+         ->where('estado', 'Volver a llamar')
+         ->where('id', '>', 1494)
          ->orderBy('id')
          ->limit(7)
          ->get();
@@ -141,15 +142,7 @@ class GestionController extends Controller
             ->where('llamadas_programadas.fecha_llamada', '>=', $twoDaysAgo->toDateString())
             ->where('llamadas_programadas.fecha_llamada', '<', $today)
             ->where('llamadas_programadas.realizada', '=', 0)
-            /*
-            ->where(function($query) use ($twoDaysAgo) {
-                $query->where('llamadas_programadas.fecha_llamada', '>', $twoDaysAgo->toDateString())
-                      ->orWhere(function($query) use ($twoDaysAgo) {
-                          $query->where('llamadas_programadas.fecha_llamada', '=', $twoDaysAgo->toDateString())
-                                ->where('llamadas_programadas.hora_llamada', '>=', $twoDaysAgo->toTimeString());
-                      });
-            })
-                      */
+
             ->get();
 
         // Return the records as a JSON response
@@ -186,13 +179,43 @@ class GestionController extends Controller
 
     public function getFilteredGestiones(Request $request)
     {
-        // Filtrar los registros por el campo 'codigo' y seleccionar los campos requeridos
-        $gestiones = GestionAceptada::where('codigo', $request->id)
-            ->select('fecha_acepto', 'hora_acepto', 'precio')
-            ->get();
+            // Filtrar los registros por el campo 'codigo' y seleccionar los campos requeridos, incluyendo nombre_cliente de la tabla clientes
+    $gestiones = GestionAceptada::join('clientes', 'gestiones_aceptadas.codigo', '=', 'clientes.codigo')
+    ->where('gestiones_aceptadas.codigo', $request->id)
+    ->select('gestiones_aceptadas.fecha_acepto', 'gestiones_aceptadas.hora_acepto', 'gestiones_aceptadas.precio', 'gestiones_aceptadas.id', 'gestiones_aceptadas.codigo', 'clientes.nombre_cliente')
+    ->get();
 
-        // Devolver los datos en formato JSON
-        return response()->json($gestiones);
+// Devolver los datos en formato JSON
+return response()->json($gestiones);
+    }
+
+    public function actualizarPrecio(Request $request)
+    {
+        $user = Auth::user();
+        $request->request->add(['fecha' => date("Y-m-d h:i:s")]);
+        $request->request->add(['id_operador' => $user->id]);
+
+        try{
+            HistorialPrecio::create($request->all());
+            //comentarios
+         $comentario = [];
+         $comentario['comentario'] = 'Se actualizo precio a '.$request->precio_ant.' de '.$request->precio_act.' por '.$request->motivo;
+         $comentario['fecha'] = $request->fecha;
+         $comentario['hora'] = date("h:i:s");
+         $comentario['estado'] = 'Actualización de precio';
+         $comentario['id_cliente'] =  $request->codigo;
+         $comentario['id_operador'] = $user->id;
+         $comentario['fecha_gestion'] = date("Y-m-d");
+         $comentario['hora_gestion'] = date("h:i:s");
+         Comentarios::create($comentario);
+
+        }
+        catch(Error $e){
+           
+            return 'error'.$e;
+            }
+
+
     }
 
 }

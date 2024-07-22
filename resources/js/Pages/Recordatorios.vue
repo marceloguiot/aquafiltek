@@ -67,6 +67,12 @@ const getLlamadas = async () =>{
     console.log(llamsemana.value);
 }
 
+const handleUpdateEjecutado = (ejecutado) => {
+  if(ejecutado == 'true')
+{
+  window.location.reload();
+}
+};
 
 const actual = ref({});
 const items = {};
@@ -194,7 +200,7 @@ onBeforeMount(getLlamadas);
     </TabGroup>
 
                 <div class="flex flex-col w-5/6 mx-auto" v-show="show_gestion">
-                <ModalGestion  :actual="actual" :scope="'llamadas'" :key="actual" />
+                <ModalGestion  :actual="actual" :scope="'llamadas'" :key="actual" @updateEjecutado="handleUpdateEjecutado" />
                 <div class="flex flex-col">
                 <ClienteInfo :actual="actual" :key="actual" :ventas="gestionesPast" />
                 </div>
