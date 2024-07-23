@@ -23,9 +23,8 @@ const isOpenLlamada = ref(false);
 const datos = ref(props.datos.previas.original);
 
 const datos_prox = ref(props.datos.proximas.original);
-console.log(datos.value);
 
-const actual = ref(datos.value[0]);
+const actual = ref(props.datos.proximas.original[0]);
 const comentarios = ref([]);
 const gestionesPast = ref([]);
 const upcomingLlamadas = ref([]);
@@ -125,13 +124,18 @@ function closeModal() {
                   <div class="flex flex-row">
                     <div v-for="dat in datos">
                       <div class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
-                      <div class="h-20 text-sm bg-yellow-400 text-center content-center border">{{ dat.nombre_cliente}}</div>
+                      <div class="h-20 text-sm bg-yellow-400 text-center content-center border p-1">{{ dat.nombre_cliente}}</div>
                       <div class="h-12 text-sm bg-yellow-400 text-center content-center border">{{ dat.tipo }}</div>
+                    </div>
+                    <div>
+                      <div class="h-16 text-xs bg-teal-400 overflow-auto text-center content-center border">{{ actual.direccion }}</div>
+                      <div class="h-20 text-sm bg-teal-400 text-center content-center border p-1">{{ actual.nombre_cliente}}</div>
+                      <div class="h-12 text-sm bg-teal-400 text-center content-center border">{{ actual.estado }}</div>
                     </div>
                     
                     <div v-for="dat in datos_prox">
                       <div class="h-16 text-xs bg-orange-400 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
-                      <div class="h-20 text-sm bg-orange-400 text-center content-center border">{{ dat.nombre_cliente}}</div>
+                      <div class="h-20 text-sm bg-orange-400 text-center content-center border p-1">{{ dat.nombre_cliente}}</div>
                       <div class="h-12 text-sm bg-orange-400 text-center content-center border">{{ dat.estado }}</div>
                     </div>
                   </div>

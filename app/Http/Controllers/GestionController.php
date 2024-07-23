@@ -108,6 +108,13 @@ class GestionController extends Controller
          $comentario['hora_gestion'] = date("h:i:s");
          Comentarios::create($comentario);
 
+         // Actualizar el estado del cliente
+         $cliente = Cliente::where('codigo', $request->codigo)->first();
+         if ($cliente) {
+             $cliente->estado = 'acepto';
+             $cliente->save();
+         }
+
          if($request->ambito == 'llamadas')
          {
              $llamada = LlamadasProgramadas::find($request->id_llamada);
@@ -158,6 +165,13 @@ class GestionController extends Controller
         $comentario['fecha_gestion'] = date("Y-m-d");
         $comentario['hora_gestion'] = date("h:i:s");
         Comentarios::create($comentario);
+
+         // Actualizar el estado del cliente
+         $cliente = Cliente::where('codigo', $request->codigo)->first();
+         if ($cliente) {
+             $cliente->estado = $request->tipo;
+             $cliente->save();
+         }
 
 
         if($request->ambito == 'llamadas')
