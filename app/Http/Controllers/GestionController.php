@@ -33,12 +33,15 @@ class GestionController extends Controller
         // Obtener las gestiones próximas cuyo código no está en la tabla operador_cliente
         $gestiones = Gestion::whereBetween('fecha', [$fecha_inicio, $fecha_fin])
                             ->whereNotIn('codigo', $excluirCodigos)
+                            ->leftJoin('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
+                            ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
+                            ->take(3)
                             ->get();
 
         if ($gestiones->isEmpty()) {
             $clientes = Cliente::where('estado', 'Por gestionar')
                                 ->whereNotIn('codigo', $excluirCodigos)
-                                ->take(5) // Limitar a 5 registros
+                                ->take(3) // Limitar a 5 registros
                                 ->get();
                     
             $prox = response()->json($clientes);
@@ -55,6 +58,8 @@ class GestionController extends Controller
 
                 // Obtener las últimas gestiones del usuario actual
                 $ultimasGestiones = Gestion::where('id_operador', $usuarioActual->id)
+                    ->leftJoin('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
+                    ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
                     ->orderBy('fecha', 'desc')
                     ->orderBy('hora', 'desc')
                     ->take(3) // Cambia el número de registros según sea necesario
@@ -62,6 +67,8 @@ class GestionController extends Controller
         
                 // Obtener las últimas gestiones aceptadas del usuario actual
                 $ultimasGestionesAceptadas = GestionAceptada::where('id_operador', $usuarioActual->id)
+                    ->leftJoin('clientes', 'gestiones_aceptadas.codigo', '=', 'clientes.codigo')
+                    ->select('gestiones_aceptadas.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
                     ->orderBy('fecha_acepto', 'desc')
                     ->orderBy('hora_acepto', 'desc')
                     ->take(3) // Cambia el número de registros según sea necesario

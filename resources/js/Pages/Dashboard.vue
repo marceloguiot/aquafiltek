@@ -21,7 +21,9 @@ const { props } = usePage();
 const isOpenLlamada = ref(false);
 
 const datos = ref(props.datos.previas.original);
+
 const datos_prox = ref(props.datos.proximas.original);
+console.log(datos.value);
 
 const actual = ref(datos.value[0]);
 const comentarios = ref([]);
@@ -119,19 +121,20 @@ function closeModal() {
                     <!-- Inician modales-->
                     <Modals :actual="actual" />
                     <!-- Terminan modales-->
-                <div class="flex flex-row justify-center mt-5 h-40">
-
-                
+                <div class="flex flex-row justify-center mt-5">                
                   <div class="flex flex-row">
-                    
                     <div v-for="dat in datos">
-                      <div class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border">{{ dat.codigo }}</div>
-                      <div class="h-20 text-sm bg-yellow-400 text-center content-center border">{{ dat.fecha}}</div>
-                      <div class="h-12 text-sm bg-yellow-400 text-center content-center border">{{ dat.coemnatrios }}</div>
+                      <div class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
+                      <div class="h-20 text-sm bg-yellow-400 text-center content-center border">{{ dat.nombre_cliente}}</div>
+                      <div class="h-12 text-sm bg-yellow-400 text-center content-center border">{{ dat.tipo }}</div>
+                    </div>
+                    
+                    <div v-for="dat in datos_prox">
+                      <div class="h-16 text-xs bg-orange-400 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
+                      <div class="h-20 text-sm bg-orange-400 text-center content-center border">{{ dat.nombre_cliente}}</div>
+                      <div class="h-12 text-sm bg-orange-400 text-center content-center border">{{ dat.estado }}</div>
                     </div>
                   </div>
-                  
-                  
                 </div>
                 <ModalGestion  :actual="actual" :scope="'gestion'" @updateEjecutado="handleUpdateEjecutado" />
                 <div class="flex flex-col">
