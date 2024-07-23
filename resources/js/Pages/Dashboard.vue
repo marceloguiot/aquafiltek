@@ -20,9 +20,10 @@ import {
 const { props } = usePage();
 const isOpenLlamada = ref(false);
 
-const datos = ref(props.datos);
+const datos = ref(props.datos.previas.original);
+const datos_prox = ref(props.datos.proximas.original);
 
-const actual = ref(datos.value[3]);
+const actual = ref(datos.value[0]);
 const comentarios = ref([]);
 const gestionesPast = ref([]);
 const upcomingLlamadas = ref([]);
@@ -72,6 +73,15 @@ onMounted(() => {
   }
 };
 
+const getClients = async () => {
+  const response = await axios.get('/proximas_gestiones');
+  
+
+  const responseprev = await axios.get('/previas_gestiones');
+
+  
+}
+
 const fetchPasadas = async () => {
   const data = { id: actual.value.codigo };
   try {
@@ -93,6 +103,7 @@ function closeModal() {
 
       onBeforeMount(fetchComentarios);
       onBeforeMount(fetchPasadas);
+      onBeforeMount(getClients);
 
 </script>
 
@@ -110,20 +121,17 @@ function closeModal() {
                     <!-- Terminan modales-->
                 <div class="flex flex-row justify-center mt-5 h-40">
 
-                    <div v-for="(dat, index) in datos" class="h-42 w-[14%] flex flex-col">
-                        <div v-if="index == 3" class="h-16 text-xs bg-teal-500 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
-                        <div v-else-if="index < 3" class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
-                        <div v-else class="h-16 text-xs bg-orange-400 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
-                        
-                        <div v-if="index == 3" class="h-20 text-sm bg-teal-500 text-center content-center border">{{ dat.nombre_cliente}}</div>
-                        <div v-else-if="index < 3" class="h-20 text-sm bg-yellow-400 text-center content-center border">{{ dat.nombre_cliente}}</div>
-                        <div v-else class="h-20 text-sm bg-orange-400 text-center content-center border">{{ dat.nombre_cliente}}</div>
-        
-                        <div v-if="index == 3" class="h-12 text-sm bg-teal-500 text-center content-center border">{{ dat.estado }}</div>
-                        <div v-else-if="index < 3" class="h-12 text-sm bg-yellow-400 text-center content-center border">{{ dat.estado }}</div>
-                        <div v-else class="h-12 text-sm bg-orange-400 text-center content-center border">{{ dat.estado }}</div>
                 
+                  <div class="flex flex-row">
+                    
+                    <div v-for="dat in datos">
+                      <div class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border">{{ dat.codigo }}</div>
+                      <div class="h-20 text-sm bg-yellow-400 text-center content-center border">{{ dat.fecha}}</div>
+                      <div class="h-12 text-sm bg-yellow-400 text-center content-center border">{{ dat.coemnatrios }}</div>
                     </div>
+                  </div>
+                  
+                  
                 </div>
                 <ModalGestion  :actual="actual" :scope="'gestion'" @updateEjecutado="handleUpdateEjecutado" />
                 <div class="flex flex-col">

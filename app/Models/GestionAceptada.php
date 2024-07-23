@@ -22,5 +22,8 @@ class GestionAceptada extends Model
         'id_operador'
     ];
 
-
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_operador', 'id');
+    }
 }

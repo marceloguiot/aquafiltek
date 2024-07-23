@@ -9,6 +9,7 @@ use App\Models\GestionAceptada;
 use App\Models\Gestion;
 use App\Models\HistorialPrecio;
 use App\Models\LlamadasProgramadas;
+use App\Models\OperadorCliente;
 use App\Models\Comentarios;
 use Carbon\Carbon;
 use Auth;
@@ -19,14 +20,66 @@ class GestionController extends Controller
     
 
     public function index(){
-         // Retrieve the first seven matching records
-         $clientes = Cliente::where('inactivo', 0)
-         ->where('estado', 'Volver a llamar')
-         ->where('id', '>', 1494)
-         ->orderBy('id')
-         ->limit(7)
-         ->get();
-        return Inertia::render('Dashboard', ['datos' => $clientes]);
+         // Obtener la fecha de hoy
+        $hoy = Carbon::today();
+
+        // Definir el rango de fechas (por ejemplo, desde hoy hasta 7 días adelante)
+        $fecha_inicio = $hoy;
+        $fecha_fin = $hoy->copy()->addDays(7);
+
+        // Subconsulta para obtener los códigos de cliente que están en la tabla operador_cliente
+        $excluirCodigos = OperadorCliente::pluck('codigo_cliente');
+
+        // Obtener las gestiones próximas cuyo código no está en la tabla operador_cliente
+        $gestiones = Gestion::whereBetween('fecha', [$fecha_inicio, $fecha_fin])
+                            ->whereNotIn('codigo', $excluirCodigos)
+                            ->get();
+
+        if ($gestiones->isEmpty()) {
+            $clientes = Cliente::where('estado', 'Por gestionar')
+                                ->whereNotIn('codigo', $excluirCodigos)
+                                ->take(5) // Limitar a 5 registros
+                                ->get();
+                    
+            $prox = response()->json($clientes);
+        }
+        else
+        {
+            
+            $prox = response()->json($gestiones);
+        }
+                    
+
+                // Obtener el usuario autenticado
+                $usuarioActual = Auth::user();
+
+                // Obtener las últimas gestiones del usuario actual
+                $ultimasGestiones = Gestion::where('id_operador', $usuarioActual->id)
+                    ->orderBy('fecha', 'desc')
+                    ->orderBy('hora', 'desc')
+                    ->take(3) // Cambia el número de registros según sea necesario
+                    ->get();
+        
+                // Obtener las últimas gestiones aceptadas del usuario actual
+                $ultimasGestionesAceptadas = GestionAceptada::where('id_operador', $usuarioActual->id)
+                    ->orderBy('fecha_acepto', 'desc')
+                    ->orderBy('hora_acepto', 'desc')
+                    ->take(3) // Cambia el número de registros según sea necesario
+                    ->get();
+        
+                // Combinar ambas colecciones
+                $gestionesCombinadas = $ultimasGestiones->merge($ultimasGestionesAceptadas);
+        
+                // Devolver los datos en formato JSON
+                $prev = response()->json($gestionesCombinadas);
+       
+
+                $all = [];
+                $all['previas'] = $prev;
+                $all['proximas'] = $prox;
+
+
+        return Inertia::render('Dashboard', ['datos' => $all]);
     }
 
     public function acepto(Request $request){
@@ -216,6 +269,63 @@ return response()->json($gestiones);
             }
 
 
+    }
+
+    public function getProximasGestiones(Request $request)
+    {
+        // Obtener la fecha de hoy
+        $hoy = Carbon::today();
+
+        // Definir el rango de fechas (por ejemplo, desde hoy hasta 7 días adelante)
+        $fecha_inicio = $hoy;
+        $fecha_fin = $hoy->copy()->addDays(7);
+
+        // Subconsulta para obtener los códigos de cliente que están en la tabla operador_cliente
+        $excluirCodigos = OperadorCliente::pluck('codigo_cliente');
+
+        // Obtener las gestiones próximas cuyo código no está en la tabla operador_cliente
+        $gestiones = Gestion::whereBetween('fecha', [$fecha_inicio, $fecha_fin])
+                            ->whereNotIn('codigo', $excluirCodigos)
+                            ->get();
+
+        if ($gestiones->isEmpty()) {
+            $clientes = Cliente::where('estado', 'Por gestionar')
+                                ->whereNotIn('codigo', $excluirCodigos)
+                                ->take(5) // Limitar a 5 registros
+                                ->get();
+                    
+            return response()->json($clientes);
+        }
+                    
+
+        // Devolver los datos en formato JSON
+        return response()->json($gestiones);
+    }
+
+    public function getUltimasGestiones()
+    {
+        // Obtener el usuario autenticado
+        $usuarioActual = Auth::user();
+
+        // Obtener las últimas gestiones del usuario actual
+        $ultimasGestiones = Gestion::where('id_operador', $usuarioActual->id)
+            ->orderBy('fecha', 'desc')
+            ->orderBy('hora', 'desc')
+            ->take(10) // Cambia el número de registros según sea necesario
+            ->get();
+
+        // Obtener las últimas gestiones aceptadas del usuario actual
+        $ultimasGestionesAceptadas = GestionAceptada::where('id_operador', $usuarioActual->id)
+            ->orderBy('fecha_acepto', 'desc')
+            ->orderBy('hora_acepto', 'desc')
+            ->take(10) // Cambia el número de registros según sea necesario
+            ->get();
+
+        // Combinar ambas colecciones
+        $gestionesCombinadas = $ultimasGestiones->merge($ultimasGestionesAceptadas);
+
+        // Devolver los datos en formato JSON
+        return response()->json($gestionesCombinadas);
     }
 
 }
