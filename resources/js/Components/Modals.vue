@@ -82,11 +82,18 @@ const props = defineProps({
 
 const handleSearch = async (field, value) => {
   try {
-    const response = await axios.post('/getDataClient', {
+    if(value.length > 3)
+  {
+    const response = await axios.post('/getClientSearch', {
       field: field,
       value: value
     });
     searchResults.value = response.data;
+  }
+  else
+  {
+    searchResults.value = [];
+  }
   } catch (error) {
     console.error('There was an error!', error);
   }
@@ -159,7 +166,15 @@ const showsearch = () => {
 
 const elegir_actual = (cliente) =>{
   emit('clienteSeleccionado', cliente);
-  console.log(cliente.codigo);
+  showsrch.value = true;
+
+  searchCriteria.id = '';
+  searchCriteria.nombre = '';
+  searchCriteria.factura = '';
+  searchCriteria.ciudadela = '';
+  searchCriteria.telefono = '';
+  searchResults.value = [];
+
 }
 
 function closeModaled() {
@@ -210,7 +225,7 @@ function openModaled() {
       <input v-model="searchCriteria.id" type="text" id="id" placeholder="Buscar por ID" @keyup="handleSearch('codigo', $event.target.value)" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
     </div>
   </div>
-  <div v-if="searchResults.length > 0" class="mt-4">
+  <div v-if="searchResults.length > 0" class="mt-4" :hidden="showsrch">
     <h2 class="text-lg font-medium text-gray-900">Resultados de la búsqueda:</h2>
     <ul class="mt-1 space-y-1">
       <li v-for="cliente in searchResults" @click="elegir_actual(cliente)" :key="cliente.id" class="p-2 bg-white border border-gray-200 rounded-md shadow-sm hover:cursor-pointer hover:bg-slate-300">

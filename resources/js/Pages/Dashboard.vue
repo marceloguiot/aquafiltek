@@ -30,6 +30,7 @@ const gestionesPast = ref([]);
 const upcomingLlamadas = ref([]);
 const handleClienteSeleccionado = (cliente) => {
   actual.value = cliente;
+  fetchComentarios;
 };
 const fetchUpcomingLlamadas = async () => {
   try {
@@ -146,7 +147,7 @@ function closeModal() {
                 <div class="flex flex-col">
                 <ClienteInfo :actual="actual" :ventas="gestionesPast" />
                 </div>
-                <ComentariosHistorico :items="comentarios" />
+                <ComentariosHistorico :actual="actual" :items="comentarios" />
             </div>
         </div>
     </AuthenticatedLayout>

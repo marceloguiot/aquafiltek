@@ -34,8 +34,8 @@ const props = defineProps({
                         <td v-if="index % 2 === 0" class="text-white bg-slate-600 border">{{ item.fecha_gestion }}</td>
                         <td v-else class="text-white bg-slate-400 border">{{ item.fecha_gestion }}</td>
 
-                        <td v-if="index % 2 === 0" class="text-white bg-slate-600 border">{{ item.id_operador }}</td>
-                        <td v-else class="text-white bg-slate-400 border">{{ item.id_operador }}</td>
+                        <td v-if="index % 2 === 0" class="text-white bg-slate-600 border">{{ item.operador_name }}</td>
+                        <td v-else class="text-white bg-slate-400 border">{{ item.operador_name }}</td>
 
                         
                     </tr>
