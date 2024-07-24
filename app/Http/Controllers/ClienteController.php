@@ -60,4 +60,23 @@ class ClienteController extends Controller
          ->get();
          return response()->json($comentarios, 200);
     }
+
+    public function actualizar(Request $request){
+         // Encontrar el cliente por su código
+         $cliente = Cliente::where('codigo', $request->codigo)->first();
+         $cliente->update($request->all());
+        
+    }
+
+    public function getDataClient(Request $request)
+{
+    $field = $request->input('field');
+    $value = $request->input('value');
+
+    // Asegúrate de validar el campo y el valor aquí
+
+    $clientes = Cliente::where($field, 'LIKE', "%{$value}%")->get();
+
+    return response()->json($clientes);
+}
 }

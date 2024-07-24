@@ -28,7 +28,9 @@ const actual = ref(props.datos.proximas.original[0]);
 const comentarios = ref([]);
 const gestionesPast = ref([]);
 const upcomingLlamadas = ref([]);
-
+const handleClienteSeleccionado = (cliente) => {
+  actual.value = cliente;
+};
 const fetchUpcomingLlamadas = async () => {
   try {
     const response = await axios.get('/llamadas/upcoming');
@@ -118,7 +120,7 @@ function closeModal() {
                     <div class="p-6 text-gray-900">Bienvenido</div>
                 </div>
                     <!-- Inician modales-->
-                    <Modals :actual="actual" />
+                    <Modals :actual="actual" @clienteSeleccionado="handleClienteSeleccionado" />
                     <!-- Terminan modales-->
                 <div class="flex flex-row justify-center mt-5">                
                   <div class="flex flex-row">
@@ -130,13 +132,13 @@ function closeModal() {
                     <div>
                       <div class="h-16 text-xs bg-teal-400 overflow-auto text-center content-center border">{{ actual.direccion }}</div>
                       <div class="h-20 text-sm bg-teal-400 text-center content-center border p-1">{{ actual.nombre_cliente}}</div>
-                      <div class="h-12 text-sm bg-teal-400 text-center content-center border">{{ actual.estado }}</div>
+                      <div class="h-12 text-sm bg-teal-400 text-center content-center border">{{ actual.tipo }}</div>
                     </div>
                     
                     <div v-for="dat in datos_prox">
                       <div class="h-16 text-xs bg-orange-400 overflow-auto text-center content-center border">{{ dat.direccion }}</div>
                       <div class="h-20 text-sm bg-orange-400 text-center content-center border p-1">{{ dat.nombre_cliente}}</div>
-                      <div class="h-12 text-sm bg-orange-400 text-center content-center border">{{ dat.estado }}</div>
+                      <div class="h-12 text-sm bg-orange-400 text-center content-center border">{{ dat.tipo }}</div>
                     </div>
                   </div>
                 </div>

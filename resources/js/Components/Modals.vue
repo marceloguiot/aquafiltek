@@ -9,12 +9,19 @@ import {
 
 import { ref, computed, reactive, onBeforeUnmount } from 'vue';
 import { router } from '@inertiajs/vue3';
+import axios from 'axios';
+import { defineEmits } from 'vue';
+
+// Define emits
+const emit = defineEmits(['clienteSeleccionado']);
 
 
 const redirectToGestionCalendario = () => {
   router.visit(route('gestion_calendario'));
 }
 
+
+const searchResults = ref([]);
 //form
 
 const form = reactive({
@@ -60,9 +67,38 @@ const submit = () => {
   router.post('/cliente', form)
 }
 
+const searchCriteria = reactive({
+        nombre: '',
+        ciudadela: '',
+        telefono: '',
+        factura: '',
+        id: ''
+      });
+
 const props = defineProps({
   actual: Object
 });
+
+
+const handleSearch = async (field, value) => {
+  try {
+    const response = await axios.post('/getDataClient', {
+      field: field,
+      value: value
+    });
+    searchResults.value = response.data;
+  } catch (error) {
+    console.error('There was an error!', error);
+  }
+};
+
+const edit = ref(props.actual);
+console.log(edit);
+
+const actualizar = async () => {
+  router.post('/cliente_actualizar', edit.value);
+  isOpened.value = false;
+}
 
 // Method to start the timer
 const startTimer = () => {
@@ -97,6 +133,7 @@ onBeforeUnmount(() => {
 const isOpen = ref(false);
 const isOpened = ref(false)
 const isOpendesc = ref(false);
+const showsrch = ref(true);
 
 function closeModal() {
   isOpen.value = false
@@ -116,7 +153,14 @@ function closeModalDesc() {
 
 }
 
+const showsearch = () => {
+  showsrch.value = !showsrch.value;
+}
 
+const elegir_actual = (cliente) =>{
+  emit('clienteSeleccionado', cliente);
+  console.log(cliente.codigo);
+}
 
 function closeModaled() {
   isOpened.value = false
@@ -132,9 +176,48 @@ function openModaled() {
                     <button class="bg-blue-500 text-white font-semibold rounded-md p-2" @click="openModaled"><font-awesome-icon icon="fa-solid fa-vcard" /></button>
                     <button class="bg-blue-500 text-white font-semibold rounded-md p-2"><font-awesome-icon icon="fa-solid fa-hourglass-1" /></button>
                     <button class="bg-blue-500 text-white font-semibold rounded-md p-2"><font-awesome-icon icon="fa-solid fa-file-pdf" /></button>
-                    <button class="bg-blue-500 text-white font-semibold rounded-md p-2"><font-awesome-icon icon="fa-solid fa-search" /></button>
+                    <button class="bg-blue-500 text-white font-semibold rounded-md p-2" @click="showsearch"><font-awesome-icon icon="fa-solid fa-search" /></button>
                     <button class="bg-blue-500 text-white font-semibold rounded-md p-2" @click="redirectToGestionCalendario"><font-awesome-icon icon="fa-solid fa-calendar" /></button>
                 </div>
+    <div class="flex flex-row space-x-4 p-4">
+    <!-- Campo de búsqueda: Nombre -->
+    <div class="flex-1"   :hidden="showsrch">
+      <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+      <input v-model="searchCriteria.nombre" type="text" @keyup="handleSearch('nombre_cliente', $event.target.value)" id="nombre" placeholder="Buscar por nombre" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    
+    <!-- Campo de búsqueda: Ciudadela -->
+    <div class="flex-1"   :hidden="showsrch">
+      <label for="ciudadela" class="block text-sm font-medium text-gray-700">Ciudadela</label>
+      <input v-model="searchCriteria.ciudadela" type="text" id="ciudadela" @keyup="handleSearch('ciudadela', $event.target.value)" placeholder="Buscar por ciudadela" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    
+    <!-- Campo de búsqueda: Teléfono -->
+    <div class="flex-1"   :hidden="showsrch">
+      <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+      <input v-model="searchCriteria.telefono" type="text" id="telefono" @keyup="handleSearch('telefono', $event.target.value)" placeholder="Buscar por teléfono" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    
+    <!-- Campo de búsqueda: Factura -->
+    <div class="flex-1"   :hidden="showsrch">
+      <label for="factura" class="block text-sm font-medium text-gray-700">Factura</label>
+      <input v-model="searchCriteria.factura" type="text" id="factura" @keyup="handleSearch('factura', $event.target.value)" placeholder="Buscar por factura" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    
+    <!-- Campo de búsqueda: ID -->
+    <div class="flex-1"   :hidden="showsrch">
+      <label for="id" class="block text-sm font-medium text-gray-700">ID</label>
+      <input v-model="searchCriteria.id" type="text" id="id" placeholder="Buscar por ID" @keyup="handleSearch('codigo', $event.target.value)" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+  </div>
+  <div v-if="searchResults.length > 0" class="mt-4">
+    <h2 class="text-lg font-medium text-gray-900">Resultados de la búsqueda:</h2>
+    <ul class="mt-1 space-y-1">
+      <li v-for="cliente in searchResults" @click="elegir_actual(cliente)" :key="cliente.id" class="p-2 bg-white border border-gray-200 rounded-md shadow-sm hover:cursor-pointer hover:bg-slate-300">
+        <p class="text-xs">{{ cliente.nombre_cliente }}</p>
+      </li>
+    </ul>
+  </div>
 <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModal" class="relative z-10">
       <TransitionChild
@@ -285,46 +368,46 @@ function openModaled() {
                 <p class="text-sm text-gray-500">
     <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
      
-        <form class="space-y-4">
+        <form class="space-y-4" @submit.prevent="actualizar">
             <div>
                 <label for="client-id" class="block text-sm font-medium text-gray-700">ID Cliente</label>
-                <input type="text" id="client-id" name="client-id" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" :value="actual.codigo">
+                <input type="text" id="client-id" name="client-id" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" v-model="edit.codigo">
             </div>
             <div>
                 <label for="coordinates" class="block text-sm font-medium text-gray-700">Coordenadas</label>
-                <input type="text" id="coordinates" name="coordinates" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.coordenadas">
+                <input type="text" id="coordinates" name="coordinates" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.coordenadas">
             </div>
             <div>
                 <label for="client-name" class="block text-sm font-medium text-gray-700">Nombre Cliente</label>
-                <input type="text" id="client-name" name="client-name" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.nombre_cliente">
+                <input type="text" id="client-name" name="client-name" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.nombre_cliente">
             </div>
             <div>
                 <label for="invoice-data" class="block text-sm font-medium text-gray-700">Datos de la Factura</label>
-                <input type="text" id="invoice-data" name="invoice-data" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.datos_factura">
+                <input type="text" id="invoice-data" name="invoice-data" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.datos_factura">
             </div>
             <div>
                 <label for="address" class="block text-sm font-medium text-gray-700">Dirección</label>
-                <input type="text" id="address" name="address" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.direccion">
+                <input type="text" id="address" name="address" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.direccion">
             </div>
             <div>
                 <label for="primary-phone" class="block text-sm font-medium text-gray-700">Teléfono Principal</label>
-                <input type="text" id="primary-phone" name="primary-phone" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.telefono">
+                <input type="text" id="primary-phone" name="primary-phone" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.telefono">
             </div>
             <div>
                 <label for="office-phone" class="block text-sm font-medium text-gray-700">Teléfono Oficina</label>
-                <input type="text" id="office-phone" name="office-phone" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.telefono_oficina">
+                <input type="text" id="office-phone" name="office-phone" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.telefono_oficina">
             </div>
             <div>
                 <label for="cellphone-1" class="block text-sm font-medium text-gray-700">Celular 1</label>
-                <input type="text" id="cellphone-1" name="cellphone-1" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.celular1">
+                <input type="text" id="cellphone-1" name="cellphone-1" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.celular1">
             </div>
             <div>
                 <label for="cellphone-2" class="block text-sm font-medium text-gray-700">Celular 2</label>
-                <input type="text" id="cellphone-2" name="cellphone-2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.celular2">
+                <input type="text" id="cellphone-2" name="cellphone-2" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.celular2">
             </div>
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
-                <input type="email" id="email" name="email" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.correo">
+                <input type="email" id="email" name="email" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.correo">
             </div>
             <div>
                 <label for="initial-comments" class="block text-sm font-medium text-gray-700">Comentarios Iniciales</label>
@@ -332,11 +415,11 @@ function openModaled() {
             </div>
             <div>
                 <label for="cistern-info" class="block text-sm font-medium text-gray-700">Información de Cisterna</label>
-                <textarea id="cistern-info" name="cistern-info" rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.informacion_cisterna"></textarea>
+                <textarea id="cistern-info" name="cistern-info" rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.informacion_cisterna"></textarea>
             </div>
             <div>
                 <label for="observations" class="block text-sm font-medium text-gray-700">Observaciones</label>
-                <textarea id="observations" name="observations" rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  :value="actual.observacionesjm"></textarea>
+                <textarea id="observations" name="observations" rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"  v-model="edit.observaciones"></textarea>
             </div>
             <div class="text-right">
                 <button
