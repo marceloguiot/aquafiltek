@@ -24,7 +24,7 @@ Route::get('/motivate', function () { return Inertia::render('Motivacion');})->m
 Route::get('/recordatorios', function () { return Inertia::render('Recordatorios');})->middleware(['auth', 'verified'])->name('recordatorios');
 Route::get('/gestionar', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('gestionar');
 Route::get('/postventa', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('postventa');
-Route::get('/reportes', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('reportes');
+Route::get('/reportes', function () { return Inertia::render('Reportes');})->middleware(['auth', 'verified'])->name('reportes');
 Route::get('/busqueda', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('busqueda');
 Route::get('/calendario', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('calendario');
 Route::get('/mapa', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('mapa');
@@ -34,7 +34,6 @@ Route::get('/proximas_gestiones', [GestionController::class, 'getProximasGestion
 Route::get('/previas_gestiones', [GestionController::class, 'getUltimasGestiones'])->middleware('auth')->name('previas_gestiones');
 
 //metodo POST
-
 Route::post('/cliente',[ClienteController::class, 'store'])->middleware(['auth', 'verified']);
 Route::post('/gestion_acepto',[GestionController::class, 'acepto'])->middleware(['auth', 'verified']);
 Route::post('/gestion',[GestionController::class, 'otras'])->middleware(['auth', 'verified']);
@@ -45,6 +44,7 @@ Route::post('/getPasadas',[GestionController::class, 'getFilteredGestiones'])->m
 Route::post('/edprecio',[GestionController::class, 'actualizarPrecio'])->middleware(['auth', 'verified'])->name('edprecio');
 Route::post('/cliente_actualizar',[ClienteController::class, 'actualizar'])->middleware(['auth', 'verified'])->name('cliente_actualizar');
 Route::post('/getClientSearch', [ClienteController::class, 'getDataClient'])->middleware(['auth', 'verified'])->name('getClientSearch');
+Route::post('/getReport', [GestionController::class, 'getReport'])->middleware(['auth', 'verified'])->name('getReport');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

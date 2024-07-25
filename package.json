@@ -25,7 +25,13 @@
         "@fortawesome/free-solid-svg-icons": "^6.5.2",
         "@fortawesome/vue-fontawesome": "^3.0.8",
         "@headlessui/vue": "^1.7.19",
+        "datatables.net-dt": "^2.1.2",
+        "datatables.net-select": "^2.0.3",
+        "datatables.net-vue3": "^3.0.2",
+        "jspdf": "^2.5.1",
+        "jspdf-autotable": "^3.8.2",
         "sweetalert2": "^11.10.7",
-        "vue3-easy-data-table": "^1.5.47"
+        "vue3-easy-data-table": "^1.5.47",
+        "xlsx": "^0.18.5"
     }
 }

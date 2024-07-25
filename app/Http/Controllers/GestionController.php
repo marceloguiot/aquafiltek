@@ -13,6 +13,8 @@ use App\Models\OperadorCliente;
 use App\Models\Comentarios;
 use Carbon\Carbon;
 use Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class GestionController extends Controller
 {
@@ -348,5 +350,31 @@ return response()->json($gestiones);
         // Devolver los datos en formato JSON
         return response()->json($gestionesCombinadas);
     }
+
+    public function getReport(Request $request)
+{
+    $startDate = $request->input('start_date');
+    $endDate = $request->input('end_date');
+
+    $gestiones = DB::table('gestiones_aceptadas')
+        ->join('clientes', 'gestiones_aceptadas.codigo', '=', 'clientes.codigo')
+        ->join('users', 'gestiones_aceptadas.id_operador', '=', 'users.id')
+        ->whereBetween('gestiones_aceptadas.fecha_acepto', [$startDate, $endDate])
+        ->select(
+            'gestiones_aceptadas.codigo',
+            'gestiones_aceptadas.fecha_acepto',
+            'gestiones_aceptadas.hora_acepto',
+            'gestiones_aceptadas.precio',
+            'gestiones_aceptadas.comentarios',
+            'gestiones_aceptadas.fecha_gestion',
+            'gestiones_aceptadas.id_operador',
+            'clientes.nombre_cliente',
+            'users.name as nombre_operador'
+        )
+        ->get();
+
+    return response()->json($gestiones);
+}
+
 
 }
