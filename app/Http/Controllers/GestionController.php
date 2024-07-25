@@ -356,25 +356,67 @@ return response()->json($gestiones);
     $startDate = $request->input('start_date');
     $endDate = $request->input('end_date');
 
-    $gestiones = DB::table('gestiones_aceptadas')
-        ->join('clientes', 'gestiones_aceptadas.codigo', '=', 'clientes.codigo')
-        ->join('users', 'gestiones_aceptadas.id_operador', '=', 'users.id')
-        ->whereBetween('gestiones_aceptadas.fecha_acepto', [$startDate, $endDate])
+       // Obtener los registros en el rango de fechas
+       $registros = GestionAceptada::whereBetween('fecha_acepto', [$startDate, $endDate])
+       ->join('clientes', 'gestiones_aceptadas.codigo', '=', 'clientes.codigo')
+       ->join('users', 'gestiones_aceptadas.id_operador', '=', 'users.id')
+       ->select(
+           'gestiones_aceptadas.*',
+           'clientes.nombre_cliente',
+           'users.name as nombre_operador'
+       )
+       ->get();
+
+   // Obtener los registros por operador
+   $registrosPorOperador = GestionAceptada::whereBetween('fecha_acepto', [$startDate, $endDate])
+       ->join('users', 'gestiones_aceptadas.id_operador', '=', 'users.id')
+       ->select('id_operador', 'users.name as nombre_operador', DB::raw('count(*) as cantidad'))
+       ->groupBy('id_operador', 'users.name')
+       ->get();
+
+   return response()->json([
+       'registros' => $registros,
+       'registrosPorOperador' => $registrosPorOperador
+   ]);
+}
+
+public function getFilteredData(Request $request)
+{
+    $startDate = $request->input('start_date');
+    $endDate = $request->input('end_date');
+    $estado = $request->input('estado');
+
+    $gestiones = Gestion::query()
+        ->join('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
+        ->join('users', 'gestiones.id_operador', '=', 'users.id')
         ->select(
-            'gestiones_aceptadas.codigo',
-            'gestiones_aceptadas.fecha_acepto',
-            'gestiones_aceptadas.hora_acepto',
-            'gestiones_aceptadas.precio',
-            'gestiones_aceptadas.comentarios',
-            'gestiones_aceptadas.fecha_gestion',
-            'gestiones_aceptadas.id_operador',
+            'gestiones.*',
             'clientes.nombre_cliente',
             'users.name as nombre_operador'
         )
+        ->whereBetween('fecha', [$startDate, $endDate])
+        ->where('tipo', $estado)
         ->get();
+
+    if ($estado === 'acepto') {
+        $gestionesAceptadas = GestionAceptada::query()
+            ->join('clientes', 'gestiones_aceptadas.codigo', '=', 'clientes.codigo')
+            ->join('users', 'gestiones_aceptadas.id_operador', '=', 'users.id')
+            ->select(
+                'gestiones_aceptadas.*',
+                'clientes.nombre_cliente',
+                'users.name as nombre_operador'
+            )
+            ->whereBetween('fecha_acepto', [$startDate, $endDate])
+            ->get();
+
+        // Unir los resultados de las dos consultas
+        $gestiones = $gestiones->merge($gestionesAceptadas);
+    }
 
     return response()->json($gestiones);
 }
+
 
 
 }

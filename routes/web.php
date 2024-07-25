@@ -25,7 +25,7 @@ Route::get('/recordatorios', function () { return Inertia::render('Recordatorios
 Route::get('/gestionar', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('gestionar');
 Route::get('/postventa', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('postventa');
 Route::get('/reportes', function () { return Inertia::render('Reportes');})->middleware(['auth', 'verified'])->name('reportes');
-Route::get('/busqueda', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('busqueda');
+Route::get('/busqueda', function () { return Inertia::render('Filtros');})->middleware(['auth', 'verified'])->name('busqueda');
 Route::get('/calendario', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('calendario');
 Route::get('/mapa', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('mapa');
 Route::get('/gestion_calendario', function () { return Inertia::render('GestionCalendario');})->middleware(['auth', 'verified'])->name('gestion_calendario');
@@ -45,6 +45,7 @@ Route::post('/edprecio',[GestionController::class, 'actualizarPrecio'])->middlew
 Route::post('/cliente_actualizar',[ClienteController::class, 'actualizar'])->middleware(['auth', 'verified'])->name('cliente_actualizar');
 Route::post('/getClientSearch', [ClienteController::class, 'getDataClient'])->middleware(['auth', 'verified'])->name('getClientSearch');
 Route::post('/getReport', [GestionController::class, 'getReport'])->middleware(['auth', 'verified'])->name('getReport');
+Route::post('/getFilteredData', [GestionController::class, 'getFilteredData'])->middleware(['auth', 'verified'])->name('getFilteredData');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

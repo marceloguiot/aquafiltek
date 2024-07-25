@@ -14,6 +14,7 @@ DataTable.use(Select);
 const startDate = ref('');
 const endDate = ref('');
 const reportData = ref([]);
+const registrosPorOperador = ref([]);
 
 const columns = [
   { title: 'Código', data: 'codigo' },
@@ -37,7 +38,8 @@ const generateReport = async () => {
       start_date: startDate.value,
       end_date: endDate.value,
     });
-    reportData.value = await response.data;
+    reportData.value = await response.data.registros;
+    registrosPorOperador.value = await response.data.registrosPorOperador;
     console.log(reportData.value);
   } catch (error) {
     console.error('Error generating report:', error);
@@ -47,8 +49,8 @@ const generateReport = async () => {
 const exportToPDF = () => {
   const doc = new jsPDF();
   doc.autoTable({
-    head: [columns.map(col => col.label)],
-    body: reportData.value.map(row => columns.map(col => row[col.field])),
+    head: [columns.map(col => col.title)],
+    body: reportData.value.map(row => columns.map(col => row[col.data])),
   });
   doc.save('reporte.pdf');
 };
@@ -108,7 +110,25 @@ const exportToExcel = () => {
         <button @click="exportToExcel" class="flex items-center px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600">
           <i class="fas fa-file-excel mr-2"></i> Descargar Excel
         </button>
+        
       </div>
+      <h2 class="text-xl font-bold mt-10 mb-4">Registros por Operador</h2>
+      <table class="min-w-full bg-white border border-gray-200">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 border border-slate-600 bg-slate-400">ID Operador</th>
+            <th class="px-4 py-2 border border-slate-600 bg-slate-400">Nombre Operador</th>
+            <th class="px-4 py-2 border border-slate-600 bg-slate-400">Cantidad de Registros</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="operador in registrosPorOperador" :key="operador.id_operador">
+            <td class="px-4 py-2 border border-slate-600 text-center">{{ operador.id_operador }}</td>
+            <td class="px-4 py-2 border border-slate-600">{{ operador.nombre_operador }}</td>
+            <td class="px-4 py-2 border border-slate-600 text-center">{{ operador.cantidad }}</td>
+          </tr>
+        </tbody>
+      </table>
       </div>
     </div>
 </AuthenticatedLayout>
