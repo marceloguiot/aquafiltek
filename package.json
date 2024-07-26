@@ -28,6 +28,7 @@
         "datatables.net-dt": "^2.1.2",
         "datatables.net-select": "^2.0.3",
         "datatables.net-vue3": "^3.0.2",
+        "date-fns": "^3.6.0",
         "jspdf": "^2.5.1",
         "jspdf-autotable": "^3.8.2",
         "sweetalert2": "^11.10.7",

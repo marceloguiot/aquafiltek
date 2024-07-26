@@ -15,6 +15,8 @@ use Carbon\Carbon;
 use Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use App\Models\Postventa;
+use Illuminate\Support\Facades\Storage;
 
 class GestionController extends Controller
 {
@@ -416,6 +418,54 @@ public function getFilteredData(Request $request)
 
     return response()->json($gestiones);
 }
+
+public function storePostventa(Request $request)
+{
+    $request->validate([
+        'trabajo_realizado' => 'required',
+        'pago_realizado' => 'required',
+        'fecha_ejecucion' => 'required|date',
+        'informe' => 'required|file|mimes:pdf'
+    ]);
+
+    $pagoRealizado = number_format((float)$request->pago_realizado, 2, '.', '');
+    // Guardar el archivo PDF
+    $path = $request->file('informe')->store('informes', 'public');
+
+
+
+    // Crear el registro en la tabla de postventa
+    Postventa::create([
+        'id_gestion' => $request->id_gestion,
+        'trabajo_realizado' => $request->trabajo_realizado,
+        'pago_realizado' => $pagoRealizado,
+        'fecha_ejecucion' => $request->fecha_ejecucion,
+        'informe' => $path,
+    ]);
+
+    return response()->json(['message' => 'Postventa registrada con éxito']);
+}
+
+public function getGestionesAceptadas()
+{
+    $gestiones = GestionAceptada::join('clientes', 'gestiones_aceptadas.codigo', '=', 'clientes.codigo')
+        ->select('gestiones_aceptadas.id', 'clientes.nombre_cliente as cliente_nombre', 'gestiones_aceptadas.fecha_acepto')
+        ->get();
+
+    return response()->json($gestiones);
+}
+
+public function getClienteNombre($id_gestion)
+{
+    $gestion = GestionAceptada::findOrFail($id_gestion);
+    $cliente = Cliente::where('codigo', $gestion->codigo)->first();
+
+    return response()->json(['nombre_cliente' => $cliente->nombre]);
+}
+
+
+
+
 
 
 
