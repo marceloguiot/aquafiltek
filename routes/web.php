@@ -37,6 +37,7 @@ Route::get('/gestiones-aceptadas', [GestionController::class, 'getGestionesAcept
 Route::get('/cliente-nombre/{id_gestion}', [GestionController::class, 'getClienteNombre'])->middleware(['auth', 'verified'])->name('cliente-nombre');
 
 
+
 //metodo POST
 Route::post('/cliente',[ClienteController::class, 'store'])->middleware(['auth', 'verified']);
 Route::post('/gestion_acepto',[GestionController::class, 'acepto'])->middleware(['auth', 'verified']);
@@ -51,6 +52,7 @@ Route::post('/getClientSearch', [ClienteController::class, 'getDataClient'])->mi
 Route::post('/getReport', [GestionController::class, 'getReport'])->middleware(['auth', 'verified'])->name('getReport');
 Route::post('/getFilteredData', [GestionController::class, 'getFilteredData'])->middleware(['auth', 'verified'])->name('getFilteredData');
 Route::post('/postventa', [GestionController::class, 'storePostventa']);
+Route::post('/api/getGestiones', [GestionController::class, 'getGestiones']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

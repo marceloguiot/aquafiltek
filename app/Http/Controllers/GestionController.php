@@ -463,6 +463,49 @@ public function getClienteNombre($id_gestion)
     return response()->json(['nombre_cliente' => $cliente->nombre]);
 }
 
+public function getGestiones(Request $request)
+{
+    $fecha_inicio = $request->input('fecha_inicio');
+    $fecha_fin = $request->input('fecha_fin');
+
+    // Obtener registros de gestiones
+    $gestiones = Gestion::whereBetween('fecha', [$fecha_inicio, $fecha_fin])
+        ->get()
+        ->map(function($gestion) {
+            $cliente = Cliente::where('codigo', $gestion->codigo)->first();
+            return [
+                'id' => $gestion->id,
+                'codigo' => $gestion->codigo,
+                'fecha' => $gestion->fecha,
+                'hora' => $gestion->hora,
+                'descripcion' => $gestion->comentarios,
+                'cliente' => $cliente ? $cliente->nombre_cliente : 'Desconocido',
+                'tipo' => 'gestion'
+            ];
+        });
+
+    // Obtener registros de gestiones aceptadas
+    $gestionesAceptadas = GestionAceptada::whereBetween('fecha_acepto', [$fecha_inicio, $fecha_fin])
+        ->get()
+        ->map(function($gestionAceptada) {
+            $cliente = Cliente::where('codigo', $gestionAceptada->codigo)->first();
+            return [
+                'id' => $gestionAceptada->id,
+                'codigo' => $gestionAceptada->codigo,
+                'fecha' => $gestionAceptada->fecha_acepto,
+                'hora' => $gestionAceptada->hora_acepto,
+                'descripcion' => 'Aceptada por ' . $gestionAceptada->precio,
+                'cliente' => $cliente ? $cliente->nombre_cliente : 'Desconocido',
+                'tipo' => 'gestion_aceptada'
+            ];
+        });
+
+    // Combinar ambos resultados y ordenar
+    $result = $gestiones->merge($gestionesAceptadas)->sortBy('fecha')->sortBy('hora')->values();
+
+    return response()->json($result);
+}
+
 
 
 

@@ -1,6 +1,12 @@
 <template>
-    <div class="container mx-auto p-4">
-      <div class="tabs mb-4">
+          <Head title="Reportes" />
+
+<AuthenticatedLayout>
+    <div class="w-[88%] mx-auto p-4">
+      <div class="flex flex-col">
+      <span class="text-center mt-2 text-2xl font-semibold">Calendario de servicios</span>
+    </div>
+      <div class="tabs mb-8 mt-10">
         <button
           :class="{'tab-active': activeTab === 'month', 'tab': true}"
           @click="activeTab = 'month'"
@@ -22,17 +28,20 @@
       </div>
   
       <div class="navigation mb-4 flex justify-between items-center">
-        <button class="btn" @click="previous">Anterior</button>
+        <button class="btn hover:bg-slate-400 hover:text-white hover:font-semibold" @click="previous">Anterior</button>
         <span class="text-xl font-bold" v-if="activeTab === 'month'">{{ currentMonth }}</span>
-        <button class="btn" @click="next">Siguiente</button>
+        <span class="text-xl font-bold" v-if="activeTab === 'day'">{{ currentDay }}</span>
+        <button class="btn hover:bg-slate-400 hover:text-white hover:font-semibold" @click="next">Siguiente</button>
       </div>
   
       <div v-if="activeTab === 'month'">
-        <div class="grid grid-cols-7 gap-4">
-          <div class="font-bold" v-for="day in weekDays" :key="day">{{ day }}</div>
+        <div class="grid grid-cols-7 gap-4 bg-white p-3 rounded-md">
+          <div class="font-bold" v-for="day in weekDays" :key="day">
+            {{ day }}
+          </div>
           <div v-for="n in firstDayOffset" :key="'empty-' + n"></div>
-          <div class="border p-2" v-for="day in daysInMonth" :key="day">
-            <div>{{ day }}</div>
+          <div class="border p-1 h-24" v-for="day in daysInMonth" :key="day">
+            <div class="text-xs text-end">{{ day }}</div>
             <div v-for="gestion in getGestionesForDay(day)" :key="gestion.id">
               <div>{{ gestion.hora }}</div>
               <div>{{ gestion.descripcion }}</div>
@@ -42,10 +51,10 @@
       </div>
   
       <div v-if="activeTab === 'week'">
-        <div class="grid grid-cols-7 gap-4">
+        <div class="grid grid-cols-7 gap-4 bg-white py-10 px-3 rounded-md">
           <div class="font-bold" v-for="day in weekDays" :key="day">{{ day }}</div>
           <div class="border p-2" v-for="day in daysInWeek" :key="day">
-            <div>{{ day }}</div>
+            <div class="text-xs text-end h-24">{{ day }}</div>
             <div v-for="gestion in getGestionesForDay(day)" :key="gestion.id">
               <div>{{ gestion.hora }}</div>
               <div>{{ gestion.descripcion }}</div>
@@ -55,17 +64,20 @@
       </div>
   
       <div v-if="activeTab === 'day'">
-        <div class="grid grid-cols-1 gap-4">
+        <div class="flex flex-col bg-white px-3 py-10 rounded-md">
           <div class="border p-2" v-for="hour in hoursInDay" :key="hour">{{ hour }}</div>
         </div>
       </div>
     </div>
+  </AuthenticatedLayout>
   </template>
   <script setup>
   import { ref, computed, onMounted } from 'vue';
   import axios from 'axios';
   import { format, addMonths, subMonths, addWeeks, subWeeks, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, eachHourOfInterval, getDay } from 'date-fns';
   import { es } from 'date-fns/locale';
+  import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+  import { Head } from '@inertiajs/vue3';
   
   // Tabs state
   const activeTab = ref('month');
@@ -123,6 +135,7 @@
   
   // Current month name
   const currentMonth = computed(() => formatDate(currentDate.value, 'MMMM yyyy'));
+  const currentDay = computed(() => formatDate(currentDate.value, 'dd MMMM yyyy'));
   const currentYear = computed(() => formatDate(currentDate.value, 'yyyy'));
   const currentMonthNumber = computed(() => formatDate(currentDate.value, 'MM'));
   
