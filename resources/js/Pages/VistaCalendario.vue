@@ -88,7 +88,10 @@ const daysInMonth = computed(() => {
 // Generate days of the week
 const daysInWeek = computed(() => {
   const weekStart = startOfWeek(currentDate.value, { weekStartsOn: 1 }); // Start on Monday
+  
   const weekEnd = endOfWeek(currentDate.value, { weekStartsOn: 1 }); // End on Sunday
+  const result1 = eachDayOfInterval({ start: weekStart, end: weekEnd }).map(date => formatDate(date, 'd-MM-yyyy'));
+  console.log(result1);
   return eachDayOfInterval({ start: weekStart, end: weekEnd }).map(date => formatDate(date, 'd-MM-yyyy'));
 });
 
@@ -112,20 +115,32 @@ const currentMonthNumber = computed(() => formatDate(currentDate.value, 'MM'));
 const previous = () => {
   if (activeTab.value === 'month') {
     currentDate.value = subMonths(currentDate.value, 1);
+    fetchGestiones();
+
   } else if (activeTab.value === 'week') {
     currentDate.value = subWeeks(currentDate.value, 1);
+    fetchGestiones();
+
   } else if (activeTab.value === 'day') {
     currentDate.value = subDays(currentDate.value, 1);
+    fetchGestiones();
+
   }
 };
 
 const next = () => {
   if (activeTab.value === 'month') {
     currentDate.value = addMonths(currentDate.value, 1);
+    fetchGestiones();
+
   } else if (activeTab.value === 'week') {
     currentDate.value = addWeeks(currentDate.value, 1);
+    fetchGestiones();
+
   } else if (activeTab.value === 'day') {
     currentDate.value = addDays(currentDate.value, 1);
+    fetchGestiones();
+
   }
 };
 
