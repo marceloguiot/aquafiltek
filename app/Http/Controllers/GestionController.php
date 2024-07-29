@@ -467,9 +467,11 @@ public function getGestiones(Request $request)
 {
     $fecha_inicio = $request->input('fecha_inicio');
     $fecha_fin = $request->input('fecha_fin');
+    $tiposDeseados = ['inspección', 'importante', 'competencia'];
 
     // Obtener registros de gestiones
     $gestiones = Gestion::whereBetween('fecha', [$fecha_inicio, $fecha_fin])
+        ->whereIn('tipo', $tiposDeseados)
         ->get()
         ->map(function($gestion) {
             $cliente = Cliente::where('codigo', $gestion->codigo)->first();
@@ -477,10 +479,10 @@ public function getGestiones(Request $request)
                 'id' => $gestion->id,
                 'codigo' => $gestion->codigo,
                 'fecha' => $gestion->fecha,
-                'hora' => $gestion->hora,
+                'hora' => substr($gestion->hora, 0, 5),
                 'descripcion' => $gestion->comentarios,
                 'cliente' => $cliente ? $cliente->nombre_cliente : 'Desconocido',
-                'tipo' => 'gestion'
+                'tipo' => $gestion->tipo
             ];
         });
 
@@ -493,10 +495,10 @@ public function getGestiones(Request $request)
                 'id' => $gestionAceptada->id,
                 'codigo' => $gestionAceptada->codigo,
                 'fecha' => $gestionAceptada->fecha_acepto,
-                'hora' => $gestionAceptada->hora_acepto,
-                'descripcion' => 'Aceptada por ' . $gestionAceptada->precio,
+                'hora' => substr($gestionAceptada->hora_acepto, 0, 5),
+                'descripcion' => $gestionAceptada->comentarios,
                 'cliente' => $cliente ? $cliente->nombre_cliente : 'Desconocido',
-                'tipo' => 'gestion_aceptada'
+                'tipo' => 'aceptada'
             ];
         });
 
@@ -507,7 +509,30 @@ public function getGestiones(Request $request)
 }
 
 
+public function eliminarGestion(Request $request)
+{
+    $id = $request->input('id');
+    $tipo = $request->input('tipo');
 
+    try {
+        if ($tipo === 'aceptada') {
+            $gestionAceptada = GestionAceptada::find($id);
+            if ($gestionAceptada) {
+                $gestionAceptada->delete();
+            }
+        }
+        else {
+            $gestion = Gestion::find($id);
+            if ($gestion) {
+                $gestion->delete();
+            }
+        }
+
+        return response()->json(['success' => true], 200);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    }
+}
 
 
 

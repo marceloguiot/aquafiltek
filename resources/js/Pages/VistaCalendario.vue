@@ -1,5 +1,177 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios';
+import { format, addMonths, subMonths, addWeeks, subWeeks, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, eachHourOfInterval, getDay } from 'date-fns';
+import { es } from 'date-fns/locale';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head } from '@inertiajs/vue3';
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from '@headlessui/vue';
+import Swal from 'sweetalert2'
+
+
+const open_modges = ref(false);
+const actual_gest = ref([]);
+
+// Tabs state
+const activeTab = ref('month');
+const currentDate = ref(new Date());
+const gestiones = ref([]);
+const view = ref('month');
+
+// Helper functions to generate days and hours
+const formatDate = (date, formatStr) => format(date, formatStr, { locale: es });
+
+const fetchGestiones = async () => {
+const dateRange = getDateRange();
+try {
+  const response = await axios.post('/api/getGestiones', dateRange);
+  gestiones.value = response.data;
+} catch (error) {
+  console.error('Error fetching gestiones:', error);
+}
+};
+
+const setView = (newView) => {
+view.value = newView;
+fetchGestiones();
+};
+
+const modal_cal = (gestion) =>{
+  open_modges.value = true;
+  actual_gest.value = gestion;
+  }
+
+const closeModges = () =>{
+  open_modges.value = false;
+}
+
+const getDateRange = () => {
+let start, end;
+if (view.value === 'month') {
+  start = startOfMonth(currentDate.value);
+  end = endOfMonth(currentDate.value);
+} else if (view.value === 'week') {
+  start = startOfWeek(currentDate.value);
+  end = endOfWeek(currentDate.value);
+} else {
+  start = startOfDay(currentDate.value);
+  end = endOfDay(currentDate.value);
+}
+return { fecha_inicio: format(start, 'yyyy-MM-dd'), fecha_fin: format(end, 'yyyy-MM-dd') };
+};
+
+// Get gestiones for a specific day
+const getGestionesForDay = (day) => {
+  const formattedDay = `${currentYear.value}-${currentMonthNumber.value}-${day < 10 ? '0' : ''}${day}`;
+  return gestiones.value.filter((gestion) => gestion.fecha === formattedDay || gestion.fecha_acepto === formattedDay);
+};
+
+// Calculate the offset to correctly position the first day of the month
+const firstDayOffset = computed(() => {
+  const firstDayOfMonth = startOfMonth(currentDate.value);
+  return (getDay(firstDayOfMonth) + 6) % 7; // Adjusting so that Monday is the first day (0)
+});
+
+// Generate days of the month
+const daysInMonth = computed(() => {
+  const start = startOfMonth(currentDate.value);
+  const end = endOfMonth(currentDate.value);
+  return eachDayOfInterval({ start, end }).map(date => formatDate(date, 'd'));
+});
+
+// Generate days of the week
+const daysInWeek = computed(() => {
+  const weekStart = startOfWeek(currentDate.value, { weekStartsOn: 1 }); // Start on Monday
+  const weekEnd = endOfWeek(currentDate.value, { weekStartsOn: 1 }); // End on Sunday
+  return eachDayOfInterval({ start: weekStart, end: weekEnd }).map(date => formatDate(date, 'd-MM-yyyy'));
+});
+
+// Generate hours of the day
+const hoursInDay = computed(() => {
+  const hoursStart = currentDate.value.setHours(6, 0, 0, 0);
+  const hoursEnd = currentDate.value.setHours(19, 0, 0, 0);
+  return eachHourOfInterval({ start: hoursStart, end: hoursEnd }).map(hour => formatDate(hour, 'HH:mm'));
+});
+
+// Days of the week labels
+const weekDays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+// Current month name
+const currentMonth = computed(() => formatDate(currentDate.value, 'MMMM yyyy'));
+const currentDay = computed(() => formatDate(currentDate.value, 'dd MMMM yyyy'));
+const currentYear = computed(() => formatDate(currentDate.value, 'yyyy'));
+const currentMonthNumber = computed(() => formatDate(currentDate.value, 'MM'));
+
+// Navigation functions
+const previous = () => {
+  if (activeTab.value === 'month') {
+    currentDate.value = subMonths(currentDate.value, 1);
+  } else if (activeTab.value === 'week') {
+    currentDate.value = subWeeks(currentDate.value, 1);
+  } else if (activeTab.value === 'day') {
+    currentDate.value = subDays(currentDate.value, 1);
+  }
+};
+
+const next = () => {
+  if (activeTab.value === 'month') {
+    currentDate.value = addMonths(currentDate.value, 1);
+  } else if (activeTab.value === 'week') {
+    currentDate.value = addWeeks(currentDate.value, 1);
+  } else if (activeTab.value === 'day') {
+    currentDate.value = addDays(currentDate.value, 1);
+  }
+};
+
+const eliminar_gest = async (gestion) =>{
+  Swal.fire({
+  title: "¿Está seguro de eliminar esta gestión?",
+  text: "Esta acción no se puede revertir",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  cancelButtonText: "Cancelar",
+  confirmButtonText: "Eliminar"
+}).then(async (result) => {
+  if (result.isConfirmed) {
+    try {
+    const response = await axios.post('/eliminar-gestion', {
+      id: gestion.id,
+      tipo: gestion.tipo
+    });
+
+    if (response.data.success) {
+      Swal.fire({
+      title: "¡Eliminada!",
+      text: "Gestión eliminada correctamente.",
+      confirmButtonText: "Aceptar",
+      icon: "success"
+    });
+    open_modges.value = false;
+    location.reload();
+    } else {
+      //console.error('Error al eliminar la gestión:', response.data.message);
+    }
+  } catch (error) {
+    console.error('Error al eliminar la gestión:', error);
+  }
+
+
+  }
+});
+}
+
+onMounted(fetchGestiones);
+</script>
 <template>
-          <Head title="Reportes" />
+          <Head title="Calendario" />
 
 <AuthenticatedLayout>
     <div class="w-[88%] mx-auto p-4">
@@ -26,6 +198,13 @@
           Día
         </button>
       </div>
+      <div class="flex flex-row justify-around mt-2 mb-2">
+        <span class="bg-teal-500 w-full border border-slate-400 text-center">Aceptó</span>
+        <span class="bg-blue-300 w-full border border-slate-400 text-center">Inspección</span>
+        <span class="bg-yellow-500 w-full border border-slate-400 text-center">Cobros</span>
+        <span class="bg-sky-600 w-full border border-slate-400 text-center">Importante</span>
+        <span class="bg-red-500 w-full border border-slate-400 text-center">Competencia</span>
+      </div>
   
       <div class="navigation mb-4 flex justify-between items-center">
         <button class="btn hover:bg-slate-400 hover:text-white hover:font-semibold" @click="previous">Anterior</button>
@@ -40,11 +219,14 @@
             {{ day }}
           </div>
           <div v-for="n in firstDayOffset" :key="'empty-' + n"></div>
-          <div class="border p-1 h-24" v-for="day in daysInMonth" :key="day">
+          <div class="border p-1 h-24 overflow-auto" v-for="day in daysInMonth" :key="day">
             <div class="text-xs text-end">{{ day }}</div>
             <div v-for="gestion in getGestionesForDay(day)" :key="gestion.id">
-              <div>{{ gestion.hora }}</div>
-              <div>{{ gestion.descripcion }}</div>
+              <span v-if="gestion.tipo == 'aceptada'" class="text-xs bg-teal-500 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'importante'" class="text-xs bg-sky-600 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'inspeccion'" class="text-xs bg-blue-300 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+
+              <span v-else class="text-xs">{{ gestion.hora }} {{ gestion.cliente }}</span>
             </div>
           </div>
         </div>
@@ -56,8 +238,7 @@
           <div class="border p-2" v-for="day in daysInWeek" :key="day">
             <div class="text-xs text-end h-24">{{ day }}</div>
             <div v-for="gestion in getGestionesForDay(day)" :key="gestion.id">
-              <div>{{ gestion.hora }}</div>
-              <div>{{ gestion.descripcion }}</div>
+              <span class="text-xs">{{ gestion.hora }} {{ gestion.descripcion }}</span>
             </div>
           </div>
         </div>
@@ -69,102 +250,82 @@
         </div>
       </div>
     </div>
+    <TransitionRoot appear :show="open_modges" as="template">
+    <Dialog as="div" @close="closeModges" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black/25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-[50%] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h3"
+                class="text-2xl font-bold text-blue-500"
+              >
+                Detalles
+              </DialogTitle>
+              <div class="mt-2">
+              <div class="flex flex-col">
+              <div>
+                <div class="flex flex-col">
+                  <div class="flex-row justify-around mt-2">
+                  <label class="font-semibold">Id:</label>
+                  <span class="ml-2">{{ actual_gest.codigo }}</span>
+                  </div>
+                  <div class="flex-row justify-around mt-2">
+                  <label class="font-semibold">Nombre:</label>
+                  <span class="ml-2">{{ actual_gest.cliente }}</span>
+                  </div>
+                  <div class="flex-row justify-around mt-2">
+                  <label class="font-semibold">Comentarios:</label>
+                  <span class="ml-2">{{ actual_gest.descripcion }}</span>
+                  </div>
+
+                  <div class="flex-row justify-around mt-2">
+                  <label class="font-semibold">Fecha del servicio:</label>
+                  <span class="ml-2">{{ actual_gest.fecha }} {{ actual_gest.hora }}</span>
+                  </div>
+                  <div class="flex flex-row mt-5 justify-around">
+                    <button class="bg-teal-500 w-20 h-8 rounded-md hover:bg-teal-400">Ver</button>
+                    <button class="bg-yellow-500 w-20 h-8 rounded-md hover:bg-yellow-400">Editar</button>
+                    <button class="bg-red-500 w-20 h-8 rounded-md hover:bg-red-400" @click="eliminar_gest(actual_gest)">Eliminar</button>
+                  </div>
+
+                </div>
+              </div>
+              </div>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
   </AuthenticatedLayout>
   </template>
-  <script setup>
-  import { ref, computed, onMounted } from 'vue';
-  import axios from 'axios';
-  import { format, addMonths, subMonths, addWeeks, subWeeks, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, eachHourOfInterval, getDay } from 'date-fns';
-  import { es } from 'date-fns/locale';
-  import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-  import { Head } from '@inertiajs/vue3';
-  
-  // Tabs state
-  const activeTab = ref('month');
-  const currentDate = ref(new Date());
-  const gestiones = ref([]);
-  
-  // Helper functions to generate days and hours
-  const formatDate = (date, formatStr) => format(date, formatStr, { locale: es });
-  
-  // Fetch gestiones data from API
-  const fetchGestiones = async () => {
-    try {
-      const response = await axios.get('/api/getGestiones');
-      gestiones.value = response.data;
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-  // Get gestiones for a specific day
-  const getGestionesForDay = (day) => {
-    const formattedDay = `${currentYear.value}-${currentMonthNumber.value}-${day < 10 ? '0' : ''}${day}`;
-    return gestiones.value.filter((gestion) => gestion.fecha === formattedDay || gestion.fecha_acepto === formattedDay);
-  };
-  
-  // Calculate the offset to correctly position the first day of the month
-  const firstDayOffset = computed(() => {
-    const firstDayOfMonth = startOfMonth(currentDate.value);
-    return (getDay(firstDayOfMonth) + 6) % 7; // Adjusting so that Monday is the first day (0)
-  });
-  
-  // Generate days of the month
-  const daysInMonth = computed(() => {
-    const start = startOfMonth(currentDate.value);
-    const end = endOfMonth(currentDate.value);
-    return eachDayOfInterval({ start, end }).map(date => formatDate(date, 'd'));
-  });
-  
-  // Generate days of the week
-  const daysInWeek = computed(() => {
-    const weekStart = startOfWeek(currentDate.value, { weekStartsOn: 1 }); // Start on Monday
-    const weekEnd = endOfWeek(currentDate.value, { weekStartsOn: 1 }); // End on Sunday
-    return eachDayOfInterval({ start: weekStart, end: weekEnd }).map(date => formatDate(date, 'd-MM-yyyy'));
-  });
-  
-  // Generate hours of the day
-  const hoursInDay = computed(() => {
-    const hoursStart = currentDate.value.setHours(6, 0, 0, 0);
-    const hoursEnd = currentDate.value.setHours(19, 0, 0, 0);
-    return eachHourOfInterval({ start: hoursStart, end: hoursEnd }).map(hour => formatDate(hour, 'HH:mm'));
-  });
-  
-  // Days of the week labels
-  const weekDays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-  
-  // Current month name
-  const currentMonth = computed(() => formatDate(currentDate.value, 'MMMM yyyy'));
-  const currentDay = computed(() => formatDate(currentDate.value, 'dd MMMM yyyy'));
-  const currentYear = computed(() => formatDate(currentDate.value, 'yyyy'));
-  const currentMonthNumber = computed(() => formatDate(currentDate.value, 'MM'));
-  
-  // Navigation functions
-  const previous = () => {
-    if (activeTab.value === 'month') {
-      currentDate.value = subMonths(currentDate.value, 1);
-    } else if (activeTab.value === 'week') {
-      currentDate.value = subWeeks(currentDate.value, 1);
-    } else if (activeTab.value === 'day') {
-      currentDate.value = subDays(currentDate.value, 1);
-    }
-  };
-  
-  const next = () => {
-    if (activeTab.value === 'month') {
-      currentDate.value = addMonths(currentDate.value, 1);
-    } else if (activeTab.value === 'week') {
-      currentDate.value = addWeeks(currentDate.value, 1);
-    } else if (activeTab.value === 'day') {
-      currentDate.value = addDays(currentDate.value, 1);
-    }
-  };
-  
-  // Fetch gestiones on mounted
-  onMounted(fetchGestiones);
-  </script>
-  
-  <style scoped>
+<style scoped>
   .container {
     max-width: 800px;
   }

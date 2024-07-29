@@ -51,8 +51,9 @@ Route::post('/cliente_actualizar',[ClienteController::class, 'actualizar'])->mid
 Route::post('/getClientSearch', [ClienteController::class, 'getDataClient'])->middleware(['auth', 'verified'])->name('getClientSearch');
 Route::post('/getReport', [GestionController::class, 'getReport'])->middleware(['auth', 'verified'])->name('getReport');
 Route::post('/getFilteredData', [GestionController::class, 'getFilteredData'])->middleware(['auth', 'verified'])->name('getFilteredData');
-Route::post('/postventa', [GestionController::class, 'storePostventa']);
-Route::post('/api/getGestiones', [GestionController::class, 'getGestiones']);
+Route::post('/postventa', [GestionController::class, 'storePostventa'])->middleware(['auth', 'verified']);
+Route::post('/api/getGestiones', [GestionController::class, 'getGestiones'])->middleware(['auth', 'verified']);
+Route::post('/eliminar-gestion', [GestionController::class, 'eliminarGestion'])->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

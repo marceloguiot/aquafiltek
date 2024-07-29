@@ -31,7 +31,7 @@
         "date-fns": "^3.6.0",
         "jspdf": "^2.5.1",
         "jspdf-autotable": "^3.8.2",
-        "sweetalert2": "^11.10.7",
+        "sweetalert2": "^11.12.3",
         "vue3-easy-data-table": "^1.5.47",
         "xlsx": "^0.18.5"
     }

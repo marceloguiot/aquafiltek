@@ -28,8 +28,8 @@ const actual = ref(props.datos.proximas.original[0]);
 const comentarios = ref([]);
 const gestionesPast = ref([]);
 const upcomingLlamadas = ref([]);
-const handleClienteSeleccionado = (cliente) => {
-  actual.value = cliente;
+const handleClienteSeleccionado = async (cliente) => {
+  actual.value = await cliente;
   fetchComentarios();
 };
 const fetchUpcomingLlamadas = async () => {
@@ -121,7 +121,7 @@ function closeModal() {
                     <div class="p-6 text-gray-900">Bienvenido</div>
                 </div>
                     <!-- Inician modales-->
-                    <Modals :actual="actual" @clienteSeleccionado="handleClienteSeleccionado" />
+                    <Modals :actual="actual" :key="actual.codigo" @clienteSeleccionado="handleClienteSeleccionado" />
                     <!-- Terminan modales-->
                 <div class="flex flex-row justify-center mt-5">                
                   <div class="flex flex-row">
@@ -143,7 +143,7 @@ function closeModal() {
                     </div>
                   </div>
                 </div>
-                <ModalGestion  :actual="actual" :scope="'gestion'" @updateEjecutado="handleUpdateEjecutado" />
+                <ModalGestion  :actual="actual"  :key="actual.codigo" :scope="'gestion'" @updateEjecutado="handleUpdateEjecutado" />
                 <div class="flex flex-col">
                 <ClienteInfo :actual="actual" :ventas="gestionesPast" />
                 </div>
