@@ -100,7 +100,7 @@ const handleSearch = async (field, value) => {
 };
 
 const edit = ref(props.actual);
-console.log(edit);
+
 
 const actualizar = async () => {
   router.post('/cliente_actualizar', edit.value);

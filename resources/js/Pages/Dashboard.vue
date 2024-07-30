@@ -24,7 +24,11 @@ const datos = ref(props.datos.previas.original);
 
 const datos_prox = ref(props.datos.proximas.original);
 
-const actual = ref(props.datos.proximas.original[0]);
+
+const actual = ref(props.datos.actual);
+
+
+
 const comentarios = ref([]);
 const gestionesPast = ref([]);
 const upcomingLlamadas = ref([]);
@@ -36,7 +40,6 @@ const fetchUpcomingLlamadas = async () => {
   try {
     const response = await axios.get('/llamadas/upcoming');
     upcomingLlamadas.value = response.data;
-    console.log(response.data);
     if(response.data.length > 0)
     {
       isOpenLlamada.value = true;

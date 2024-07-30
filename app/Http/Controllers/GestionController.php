@@ -23,7 +23,7 @@ class GestionController extends Controller
     //
     
 
-    public function index(){
+    public function index(Request $request){
          // Obtener la fecha de hoy
         $hoy = Carbon::today();
 
@@ -83,11 +83,32 @@ class GestionController extends Controller
         
                 // Devolver los datos en formato JSON
                 $prev = response()->json($gestionesCombinadas);
+
+                $clienteId = $request->input('id');
+                $cliente_actual = null;
+                if ($clienteId) {
+                    $cliente_actual = Cliente::where('codigo', $clienteId)->first();
+                }
        
 
                 $all = [];
                 $all['previas'] = $prev;
                 $all['proximas'] = $prox;
+                if($cliente_actual)
+                {
+                    $all['actual'] = $cliente_actual;
+                }
+                else
+                {
+                    if ($gestiones->isEmpty()) {
+                    $all['actual'] = $clientes->first();
+                    }
+                    else
+                    {
+                        $all['actual'] = $gestiones->first();
+                    }
+                }
+                
 
 
         return Inertia::render('Dashboard', ['datos' => $all]);

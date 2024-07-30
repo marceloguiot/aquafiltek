@@ -12,7 +12,8 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/vue';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import { router } from '@inertiajs/vue3';
 
 
 const open_modges = ref(false);
@@ -67,9 +68,27 @@ return { fecha_inicio: format(start, 'yyyy-MM-dd'), fecha_fin: format(end, 'yyyy
 };
 
 // Get gestiones for a specific day
-const getGestionesForDay = (day) => {
+const getGestionesForDay = (day, tipo) => {
+  if(tipo === 'mes')
+{
   const formattedDay = `${currentYear.value}-${currentMonthNumber.value}-${day < 10 ? '0' : ''}${day}`;
   return gestiones.value.filter((gestion) => gestion.fecha === formattedDay || gestion.fecha_acepto === formattedDay);
+}
+else
+{
+  const dateParts = day.split('-');
+  const formattedDay = `${currentYear.value}-${currentMonthNumber.value}-${dateParts[0] < 10 ? '0' : ''}${dateParts[0]}`;
+  return gestiones.value.filter((gestion) => gestion.fecha === formattedDay || gestion.fecha_acepto === formattedDay);
+}
+
+};
+
+const getGestionesForHour = (day, hour) => {
+  const dateParts = day.split(' ');
+  const formattedDay = `${currentYear.value}-${currentMonthNumber.value}-${dateParts[0] < 10 ? '0' : ''}${dateParts[0]}`;
+  return gestiones.value.filter((gestion) => gestion.fecha === formattedDay && gestion.hora.slice(0, 2) == parseInt(hour) || gestion.fecha_acepto === formattedDay && gestion.hora.slice(0, 2) == parseInt(hour));
+
+
 };
 
 // Calculate the offset to correctly position the first day of the month
@@ -82,16 +101,14 @@ const firstDayOffset = computed(() => {
 const daysInMonth = computed(() => {
   const start = startOfMonth(currentDate.value);
   const end = endOfMonth(currentDate.value);
+  const ver = eachDayOfInterval({ start, end }).map(date => formatDate(date, 'd'));
   return eachDayOfInterval({ start, end }).map(date => formatDate(date, 'd'));
 });
 
 // Generate days of the week
 const daysInWeek = computed(() => {
   const weekStart = startOfWeek(currentDate.value, { weekStartsOn: 1 }); // Start on Monday
-  
   const weekEnd = endOfWeek(currentDate.value, { weekStartsOn: 1 }); // End on Sunday
-  const result1 = eachDayOfInterval({ start: weekStart, end: weekEnd }).map(date => formatDate(date, 'd-MM-yyyy'));
-  console.log(result1);
   return eachDayOfInterval({ start: weekStart, end: weekEnd }).map(date => formatDate(date, 'd-MM-yyyy'));
 });
 
@@ -183,6 +200,10 @@ const eliminar_gest = async (gestion) =>{
 });
 }
 
+const mover_gestion = (id) => {
+  router.visit('/dashboard', { method: 'get', data: { id } });
+}
+
 onMounted(fetchGestiones);
 </script>
 <template>
@@ -236,7 +257,7 @@ onMounted(fetchGestiones);
           <div v-for="n in firstDayOffset" :key="'empty-' + n"></div>
           <div class="border p-1 h-24 overflow-auto" v-for="day in daysInMonth" :key="day">
             <div class="text-xs text-end">{{ day }}</div>
-            <div v-for="gestion in getGestionesForDay(day)" :key="gestion.id">
+            <div v-for="gestion in getGestionesForDay(day, 'mes')" :key="gestion.id">
               <span v-if="gestion.tipo == 'aceptada'" class="text-xs bg-teal-500 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
               <span v-else-if="gestion.tipo == 'importante'" class="text-xs bg-sky-600 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
               <span v-else-if="gestion.tipo == 'inspeccion'" class="text-xs bg-blue-300 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
@@ -251,9 +272,13 @@ onMounted(fetchGestiones);
         <div class="grid grid-cols-7 gap-4 bg-white py-10 px-3 rounded-md">
           <div class="font-bold" v-for="day in weekDays" :key="day">{{ day }}</div>
           <div class="border p-2" v-for="day in daysInWeek" :key="day">
-            <div class="text-xs text-end h-24">{{ day }}</div>
-            <div v-for="gestion in getGestionesForDay(day)" :key="gestion.id">
-              <span class="text-xs">{{ gestion.hora }} {{ gestion.descripcion }}</span>
+            <div class="text-xs text-end">{{ day }}</div>
+            <div v-for="gestion in getGestionesForDay(day, 'semana')" :key="day" class="h-24">
+              <span v-if="gestion.tipo == 'aceptada'" class="text-xs bg-teal-500 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'importante'" class="text-xs bg-sky-600 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'inspeccion'" class="text-xs bg-blue-300 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+
+              <span v-else class="text-xs">{{ gestion.hora }} {{ gestion.cliente }}</span>
             </div>
           </div>
         </div>
@@ -261,7 +286,15 @@ onMounted(fetchGestiones);
   
       <div v-if="activeTab === 'day'">
         <div class="flex flex-col bg-white px-3 py-10 rounded-md">
-          <div class="border p-2" v-for="hour in hoursInDay" :key="hour">{{ hour }}</div>
+          <div class="border p-2" v-for="hour in hoursInDay" :key="hour">{{ hour }}
+            <div v-for="gestion in getGestionesForHour(currentDay, hour)" :key="day" class="h-24">
+              <span v-if="gestion.tipo == 'aceptada'" class="text-xs bg-teal-500 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'importante'" class="text-xs bg-sky-600 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'inspeccion'" class="text-xs bg-blue-300 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+
+              <span v-else class="text-xs">{{ gestion.hora }} {{ gestion.cliente }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -323,7 +356,7 @@ onMounted(fetchGestiones);
                   <span class="ml-2">{{ actual_gest.fecha }} {{ actual_gest.hora }}</span>
                   </div>
                   <div class="flex flex-row mt-5 justify-around">
-                    <button class="bg-teal-500 w-20 h-8 rounded-md hover:bg-teal-400">Ver</button>
+                    <button class="bg-teal-500 w-20 h-8 rounded-md hover:bg-teal-400" @click="mover_gestion(actual_gest.codigo)">Ver</button>
                     <button class="bg-yellow-500 w-20 h-8 rounded-md hover:bg-yellow-400">Editar</button>
                     <button class="bg-red-500 w-20 h-8 rounded-md hover:bg-red-400" @click="eliminar_gest(actual_gest)">Eliminar</button>
                   </div>
