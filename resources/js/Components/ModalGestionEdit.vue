@@ -26,19 +26,43 @@ const emit = defineEmits(['updateEjecutado']);
 
 const props = defineProps({
   actual: Object,
-  scope: String
 });
 
-
-  const acepto = ref({
-  codigo: props.actual.codigo,
-  nombre_cliente: props.actual.nombre_cliente,
+const acepto = ref({
+  codigo: '',
+  nombre_cliente: '',
   fecha_acepto: '',
   hora_acepto: '',
   precio: '',
   comentarios: '',
-  ambito: props.scope
+  id: ''
 });
+
+console.log(props.actual);
+
+if(props.actual.tipo == 'aceptada')
+{
+ 
+  acepto.value.codigo = props.actual.codigo,
+  acepto.value.nombre_cliente = props.actual.nombre_cliente,
+  acepto.value.fecha_acepto = props.actual.fecha_acepto,
+  acepto.value.hora_acepto = props.actual.hora_acepto,
+  acepto.value.precio = props.actual.precio,
+  acepto.value.comentarios = props.actual.comentarios,
+  acepto.value.id = props.actual.id,
+  acepto.value.tipo = props.actual.tipo
+
+
+isOpenacepto.value = true;
+
+
+}
+else
+{
+
+}
+
+
 
 
 const gestiones = ref({
@@ -51,10 +75,6 @@ const gestiones = ref({
   ambito: props.scope
 });
 
-if(props.scope == 'llamadas'){
-  acepto.value.id_llamada = props.actual.id_llamada;
-  gestiones.value.id_llamada = props.actual.id_llamada;
-}
 
 
 const reset_acepto = () => {
@@ -99,7 +119,7 @@ const submitAcepto = async () => {
   try {
 
 
-    const response = await axios.post('/gestion_acepto', acepto.value);
+    const response = await axios.post('/editar-acepto', acepto.value);
     console.log('Datos enviados con éxito:', response.data);
     emit('updateEjecutado', 'true');
     reset_acepto();
@@ -183,20 +203,6 @@ function closeModalRechazo() {
 }
 </script>
 <template>
-                <div class="flex flex-row justify-evenly mt-5 mb-10">
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openAcepto">Aceptó</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openInspeccion">Inspección</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openCobros">Cobros</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openImportante">Importante</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openVolver">Volver a llamar</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openRechazo">Rechazó</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openVolver">No responde</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openVolver">Equivocado</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openAveriado">Averiado</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openVolver">Otro</button>
-                <button class="bg-red-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-red-400" @click="openCompetencia">Competencia</button>
-                </div>
-
                 <TransitionRoot appear :show="isOpenacepto" as="template">
     <Dialog as="div" @close="closeModalAcepto" class="relative z-10">
       <TransitionChild

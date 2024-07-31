@@ -54,6 +54,8 @@ Route::post('/getFilteredData', [GestionController::class, 'getFilteredData'])->
 Route::post('/postventa', [GestionController::class, 'storePostventa'])->middleware(['auth', 'verified']);
 Route::post('/api/getGestiones', [GestionController::class, 'getGestiones'])->middleware(['auth', 'verified']);
 Route::post('/eliminar-gestion', [GestionController::class, 'eliminarGestion'])->middleware(['auth', 'verified']);
+Route::post('/editar-gestion', [GestionController::class, 'editarGestion'])->middleware(['auth', 'verified'])->name('editar-gestion');
+Route::post('/editar-acepto', [GestionController::class, 'editarAcepto'])->middleware(['auth', 'verified'])->name('editar-acepto');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

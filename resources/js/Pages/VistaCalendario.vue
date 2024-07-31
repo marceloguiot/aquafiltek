@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import { format, addMonths, subMonths, addWeeks, subWeeks, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, eachHourOfInterval, getDay } from 'date-fns';
 import { es } from 'date-fns/locale';
+import ModalGestionEdit from '@/Components/ModalGestionEdit.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import {
@@ -18,6 +19,7 @@ import { router } from '@inertiajs/vue3';
 
 const open_modges = ref(false);
 const actual_gest = ref([]);
+const datos_edit = ref([]);
 
 // Tabs state
 const activeTab = ref('month');
@@ -204,6 +206,26 @@ const mover_gestion = (id) => {
   router.visit('/dashboard', { method: 'get', data: { id } });
 }
 
+const editar_gest = async (gestion) =>{
+  try {
+    const response = await axios.post('/editar-gestion', {
+      id: gestion.id,
+      tipo: gestion.tipo
+    });
+
+    if (response.data) {
+      // Manejar la respuesta, por ejemplo, almacenar los detalles de la gestión
+      datos_edit.value = response.data;
+    }
+  } catch (error) {
+    console.error('Error al obtener los detalles de la gestión:', error);
+  }
+}
+
+const handleUpdateEjecutado = () => {
+  
+}
+
 onMounted(fetchGestiones);
 </script>
 <template>
@@ -288,9 +310,9 @@ onMounted(fetchGestiones);
         <div class="flex flex-col bg-white px-3 py-10 rounded-md">
           <div class="border p-2" v-for="hour in hoursInDay" :key="hour">{{ hour }}
             <div v-for="gestion in getGestionesForHour(currentDay, hour)" :key="day" class="h-24">
-              <span v-if="gestion.tipo == 'aceptada'" class="text-xs bg-teal-500 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
-              <span v-else-if="gestion.tipo == 'importante'" class="text-xs bg-sky-600 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
-              <span v-else-if="gestion.tipo == 'inspeccion'" class="text-xs bg-blue-300 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-if="gestion.tipo == 'aceptada'" class="text-sm bg-teal-500 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'importante'" class="text-sm bg-sky-600 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'inspeccion'" class="text-sm bg-blue-300 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
 
               <span v-else class="text-xs">{{ gestion.hora }} {{ gestion.cliente }}</span>
             </div>
@@ -357,7 +379,7 @@ onMounted(fetchGestiones);
                   </div>
                   <div class="flex flex-row mt-5 justify-around">
                     <button class="bg-teal-500 w-20 h-8 rounded-md hover:bg-teal-400" @click="mover_gestion(actual_gest.codigo)">Ver</button>
-                    <button class="bg-yellow-500 w-20 h-8 rounded-md hover:bg-yellow-400">Editar</button>
+                    <button class="bg-yellow-500 w-20 h-8 rounded-md hover:bg-yellow-400" @click="editar_gest(actual_gest)">Editar</button>
                     <button class="bg-red-500 w-20 h-8 rounded-md hover:bg-red-400" @click="eliminar_gest(actual_gest)">Eliminar</button>
                   </div>
 
@@ -371,6 +393,7 @@ onMounted(fetchGestiones);
       </div>
     </Dialog>
   </TransitionRoot>
+  <ModalGestionEdit :actual="datos_edit"  :key="datos_edit.id" @updateEjecutado="handleUpdateEjecutado"/>
   </AuthenticatedLayout>
   </template>
 <style scoped>

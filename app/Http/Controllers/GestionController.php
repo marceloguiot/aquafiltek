@@ -556,6 +556,52 @@ public function eliminarGestion(Request $request)
 }
 
 
+public function editarGestion(Request $request)
+{
+    $gestionId = $request->input('id');
+    $gestionTipo = $request->input('tipo');
+
+    if ($gestionTipo === 'aceptada') {
+        $gestion = GestionAceptada::where('gestiones_aceptadas.id', $gestionId)
+            ->leftJoin('clientes', 'gestiones_aceptadas.codigo', '=', 'clientes.codigo')
+            ->select('gestiones_aceptadas.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
+            ->first();
+
+            if ($gestion) {
+                $gestion->tipo = 'aceptada';
+            }
+    } else {
+        $gestion = Gestion::where('gestiones.id', $gestionId)
+            ->leftJoin('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
+            ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
+            ->first();
+    }
+
+    return response()->json($gestion);
+}
+
+public function editarAcepto(Request $request)
+{
+    $gestionTipo = $request->input('tipo');
+    $id = $request->input('id');
+
+    try {
+        if ($gestionTipo === 'aceptada') {
+            $gestion = GestionAceptada::findOrFail($id);
+        } else {
+            $gestion = Gestion::findOrFail($id);
+        }
+
+        // Actualiza los campos necesarios
+        $gestion->update($request->all());
+        return $gestionTipo;
+        //return response()->json(['success' => true, 'message' => 'Gestión actualizada correctamente']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'Error al actualizar la gestión', 'error' => $e->getMessage()], 500);
+    }
+}
+
+
 
 
 }
