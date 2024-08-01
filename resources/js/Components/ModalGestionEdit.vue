@@ -38,6 +38,17 @@ const acepto = ref({
   id: ''
 });
 
+
+const gestiones = ref({
+  codigo: '',
+  nombre_cliente: '',
+  fecha: '',
+  hora: '',
+  comentarios: '',
+  tipo :'',
+  id:''
+});
+
 console.log(props.actual);
 
 if(props.actual.tipo == 'aceptada')
@@ -60,20 +71,49 @@ isOpenacepto.value = true;
 else
 {
 
+  gestiones.value.codigo = props.actual.codigo,
+  gestiones.value.nombre_cliente = props.actual.nombre_cliente,
+  gestiones.value.fecha = props.actual.fecha,
+  gestiones.value.hora = props.actual.hora,
+  gestiones.value.comentarios = props.actual.comentarios,
+  gestiones.value.id = props.actual.id,
+  gestiones.value.tipo = props.actual.tipo
+
+  if(props.actual.tipo == 'inspeccion')
+{
+  isOpeninspeccion.value = true;
+}
+else if(props.actual.tipo == 'cobros')
+{
+  isOpencobros.value = true;
+}
+else if(props.actual.tipo == 'importante')
+{
+  isOpenimportante.value = true;
+}
+else if(props.actual.tipo == 'reprogramar')
+{
+  isOpenvolver.value = true;
+}
+else if(props.actual.tipo == 'rechazo')
+{
+  isOpenrechazo.value = true;
+}
+else if(props.actual.tipo == 'averiado')
+{
+  isOpenaveriado.value = true;
+}
+else if(props.actual.tipo == 'competencia')
+{
+  isOpencompetencia.value = true;
+}
+
 }
 
 
 
 
-const gestiones = ref({
-  codigo: props.actual.codigo,
-  nombre_cliente: props.actual.nombre_cliente,
-  fecha: '',
-  hora: '',
-  comentarios: '',
-  tipo :'',
-  ambito: props.scope
-});
+
 
 
 
@@ -132,15 +172,15 @@ const submitAcepto = async () => {
 
 const submitGestion = async (tipo) => {
   try {
-    gestiones.value.tipo = tipo;
-    const response = await axios.post('/gestion', gestiones.value);
-    console.log('Datos enviados con éxito:', response.data);
-    emit('updateEjecutado', 'true');
-    reset_gestiones();
-    
-  } catch (error) {
-    console.error('Error al enviar los datos:', error);
-  }
+const response = await axios.post('/editar-acepto', gestiones.value);
+console.log('Datos enviados con éxito:', response.data);
+emit('updateEjecutado', 'true');
+reset_acepto();
+
+} catch (error) {
+console.error('Error al enviar los datos:', error);
+}
+
 };
 
 
@@ -255,7 +295,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora de ejecución del servicio</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="acepto.hora_acepto" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="acepto.hora_acepto" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -336,7 +376,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora de ejecución del servicio</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -410,7 +450,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora de ejecución del servicio</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -484,7 +524,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -559,7 +599,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -633,7 +673,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora rechazo</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -769,7 +809,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora ejecución del servicio por la competencia</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">

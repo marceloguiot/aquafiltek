@@ -249,7 +249,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora de ejecución del servicio</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="acepto.hora_acepto" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="acepto.hora_acepto" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -330,7 +330,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora de ejecución del servicio</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -404,7 +404,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora de ejecución del servicio</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -478,7 +478,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -553,7 +553,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -627,7 +627,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora rechazo</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">
@@ -763,7 +763,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora ejecución del servicio por la competencia</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
         </div>
 
         <div class="mb-4">

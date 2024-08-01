@@ -20,6 +20,7 @@ import { router } from '@inertiajs/vue3';
 const open_modges = ref(false);
 const actual_gest = ref([]);
 const datos_edit = ref([]);
+const refedit = ref(0);
 
 // Tabs state
 const activeTab = ref('month');
@@ -189,7 +190,7 @@ const eliminar_gest = async (gestion) =>{
       icon: "success"
     });
     open_modges.value = false;
-    location.reload();
+    fetchGestiones();
     } else {
       //console.error('Error al eliminar la gestión:', response.data.message);
     }
@@ -216,6 +217,7 @@ const editar_gest = async (gestion) =>{
     if (response.data) {
       // Manejar la respuesta, por ejemplo, almacenar los detalles de la gestión
       datos_edit.value = response.data;
+      refedit.value = refedit.value+1;
     }
   } catch (error) {
     console.error('Error al obtener los detalles de la gestión:', error);
@@ -223,7 +225,8 @@ const editar_gest = async (gestion) =>{
 }
 
 const handleUpdateEjecutado = () => {
-  
+  refedit.value = refedit.value+1;
+  fetchGestiones();
 }
 
 onMounted(fetchGestiones);
@@ -283,7 +286,7 @@ onMounted(fetchGestiones);
               <span v-if="gestion.tipo == 'aceptada'" class="text-xs bg-teal-500 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
               <span v-else-if="gestion.tipo == 'importante'" class="text-xs bg-sky-600 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
               <span v-else-if="gestion.tipo == 'inspeccion'" class="text-xs bg-blue-300 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
-
+              <span v-else-if="gestion.tipo == 'competencia'" class="text-xs bg-red-400 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
               <span v-else class="text-xs">{{ gestion.hora }} {{ gestion.cliente }}</span>
             </div>
           </div>
@@ -291,14 +294,15 @@ onMounted(fetchGestiones);
       </div>
   
       <div v-if="activeTab === 'week'">
-        <div class="grid grid-cols-7 gap-4 bg-white py-10 px-3 rounded-md">
+        <div class="grid grid-cols-7 gap-4 bg-white p-3 rounded-md">
           <div class="font-bold" v-for="day in weekDays" :key="day">{{ day }}</div>
-          <div class="border p-2" v-for="day in daysInWeek" :key="day">
+          <div class="border p-1 overflow-auto h-40" v-for="day in daysInWeek" :key="day">
             <div class="text-xs text-end">{{ day }}</div>
-            <div v-for="gestion in getGestionesForDay(day, 'semana')" :key="day" class="h-24">
+            <div v-for="gestion in getGestionesForDay(day, 'semana')" :key="day">
               <span v-if="gestion.tipo == 'aceptada'" class="text-xs bg-teal-500 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
               <span v-else-if="gestion.tipo == 'importante'" class="text-xs bg-sky-600 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
               <span v-else-if="gestion.tipo == 'inspeccion'" class="text-xs bg-blue-300 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'competencia'" class="text-xs bg-red-400 rounded-sm p-[0.5px] truncate hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
 
               <span v-else class="text-xs">{{ gestion.hora }} {{ gestion.cliente }}</span>
             </div>
@@ -308,11 +312,12 @@ onMounted(fetchGestiones);
   
       <div v-if="activeTab === 'day'">
         <div class="flex flex-col bg-white px-3 py-10 rounded-md">
-          <div class="border p-2" v-for="hour in hoursInDay" :key="hour">{{ hour }}
-            <div v-for="gestion in getGestionesForHour(currentDay, hour)" :key="day" class="h-24">
-              <span v-if="gestion.tipo == 'aceptada'" class="text-sm bg-teal-500 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
-              <span v-else-if="gestion.tipo == 'importante'" class="text-sm bg-sky-600 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
-              <span v-else-if="gestion.tipo == 'inspeccion'" class="text-sm bg-blue-300 rounded-sm p-[0.5px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+          <div class="border p-2 h-32 overflow-auto" v-for="hour in hoursInDay" :key="hour">{{ hour }}
+            <div v-for="gestion in getGestionesForHour(currentDay, hour)" :key="day">
+              <span v-if="gestion.tipo == 'aceptada'" class="text-sm bg-teal-500 rounded-sm p-[4.0px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'importante'" class="text-sm bg-sky-600 rounded-sm p-[4.0px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'inspeccion'" class="text-sm bg-blue-300 rounded-sm p-[4.0px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
+              <span v-else-if="gestion.tipo == 'competencia'" class="text-sm bg-red-400 rounded-sm p-[4.0px] hover:cursor-pointer" @click="modal_cal(gestion)">{{ gestion.hora }} {{ gestion.cliente }}</span>
 
               <span v-else class="text-xs">{{ gestion.hora }} {{ gestion.cliente }}</span>
             </div>
@@ -361,7 +366,7 @@ onMounted(fetchGestiones);
               <div>
                 <div class="flex flex-col">
                   <div class="flex-row justify-around mt-2">
-                  <label class="font-semibold">Id:</label>
+                  <label class="font-semibold">Código:</label>
                   <span class="ml-2">{{ actual_gest.codigo }}</span>
                   </div>
                   <div class="flex-row justify-around mt-2">
@@ -393,7 +398,7 @@ onMounted(fetchGestiones);
       </div>
     </Dialog>
   </TransitionRoot>
-  <ModalGestionEdit :actual="datos_edit"  :key="datos_edit.id" @updateEjecutado="handleUpdateEjecutado"/>
+  <ModalGestionEdit :actual="datos_edit"  :key="refedit" @updateEjecutado="handleUpdateEjecutado"/>
   </AuthenticatedLayout>
   </template>
 <style scoped>

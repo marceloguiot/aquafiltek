@@ -79,7 +79,10 @@ class GestionController extends Controller
                     ->get();
         
                 // Combinar ambas colecciones
-                $gestionesCombinadas = $ultimasGestiones->merge($ultimasGestionesAceptadas);
+                $gestionesCombinadas = $ultimasGestiones->merge($ultimasGestionesAceptadas)
+                    ->sortByDesc('fecha')
+                    ->sortByDesc('hora')
+                    ->take(3);
         
                 // Devolver los datos en formato JSON
                 $prev = response()->json($gestionesCombinadas);
@@ -522,6 +525,15 @@ public function getGestiones(Request $request)
                 'tipo' => 'aceptada'
             ];
         });
+
+        // Inicializar colecciones vacías si no hay registros
+        if ($gestiones->isEmpty()) {
+            $gestiones = collect([]);
+        }
+    
+        if ($gestionesAceptadas->isEmpty()) {
+            $gestionesAceptadas = collect([]);
+        }
 
     // Combinar ambos resultados y ordenar
     $result = $gestiones->merge($gestionesAceptadas)->sortBy('fecha')->sortBy('hora')->values();
