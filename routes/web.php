@@ -35,6 +35,7 @@ Route::get('/previas_gestiones', [GestionController::class, 'getUltimasGestiones
 Route::get('/postventa', function () { return Inertia::render('Postventa');})->middleware(['auth', 'verified'])->name('postventa');
 Route::get('/gestiones-aceptadas', [GestionController::class, 'getGestionesAceptadas'])->middleware(['auth', 'verified'])->name('gestiones-aceptadas');
 Route::get('/cliente-nombre/{id_gestion}', [GestionController::class, 'getClienteNombre'])->middleware(['auth', 'verified'])->name('cliente-nombre');
+Route::get('/admin', function () { return Inertia::render('VistaAdm');})->middleware(['auth', 'verified'])->name('admin');
 
 
 
