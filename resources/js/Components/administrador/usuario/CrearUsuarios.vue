@@ -1,51 +1,100 @@
+<script setup>
+import InputError from '@/Components/InputError.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+
+const form = useForm({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+});
+
+const submit = () => {
+    form.post(route('register'), {
+        onFinish: () => form.reset('password', 'password_confirmation'),
+    });
+};
+</script>
 <template>
     <div>
       <h2 class="text-xl font-bold mb-4">Crear Usuario</h2>
       <!-- Formulario para crear usuario -->
-      <form>
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-            Nombre de usuario
-          </label>
-          <input
-            type="text"
-            id="username"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-            Correo electrónico
-          </label>
-          <input
-            type="email"
-            id="email"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-            Contraseña
-          </label>
-          <input
-            type="password"
-            id="password"
-            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
-        <button
-          type="submit"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Crear Usuario
-        </button>
-      </form>
+      <form @submit.prevent="submit">
+            <div>
+                <InputLabel for="name" value="Nombre" />
+
+                <TextInput
+                    id="name"
+                    type="text"
+                    class="mt-1 block w-full border-blue-300 focus:border-blue-400"
+                    v-model="form.name"
+                    required
+                    autofocus
+                    autocomplete="name"
+                />
+
+                <InputError class="mt-2" :message="form.errors.name" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="email" value="Usuario" />
+
+                <TextInput
+                    id="email"
+                    type="text"
+                    class="mt-1 block w-full border-blue-300 focus:border-blue-400"
+                    v-model="form.email"
+                    required
+                    autocomplete="username"
+                />
+
+                <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="password" value="Contraseña" />
+
+                <TextInput
+                    id="password"
+                    type="password"
+                    class="mt-1 block w-full border-blue-300 focus:border-blue-400"
+                    v-model="form.password"
+                    required
+                    autocomplete="new-password"
+                />
+
+                <InputError class="mt-2" :message="form.errors.password" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="password_confirmation" value="Confirmar contraseña" />
+
+                <TextInput
+                    id="password_confirmation"
+                    type="password"
+                    class="mt-1 block w-full border-blue-300 focus:border-blue-400"
+                    v-model="form.password_confirmation"
+                    required
+                    autocomplete="new-password"
+                />
+
+                <InputError class="mt-2" :message="form.errors.password_confirmation" />
+            </div>
+
+            <div class="flex items-center justify-end mt-8">
+
+                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    Registrar
+                </PrimaryButton>
+            </div>
+        </form>
     </div>
   </template>
   
-  <script setup>
-  /* Aquí puedes agregar la lógica del componente si es necesario */
-  </script>
+
   
   <style scoped>
   /* Añadir estilos específicos si es necesario */

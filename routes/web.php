@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\GestionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,6 +37,7 @@ Route::get('/postventa', function () { return Inertia::render('Postventa');})->m
 Route::get('/gestiones-aceptadas', [GestionController::class, 'getGestionesAceptadas'])->middleware(['auth', 'verified'])->name('gestiones-aceptadas');
 Route::get('/cliente-nombre/{id_gestion}', [GestionController::class, 'getClienteNombre'])->middleware(['auth', 'verified'])->name('cliente-nombre');
 Route::get('/admin', function () { return Inertia::render('VistaAdm');})->middleware(['auth', 'verified'])->name('admin');
+Route::get('/users', [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('users');
 
 
 
