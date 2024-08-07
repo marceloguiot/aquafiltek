@@ -10,6 +10,9 @@ import {
 } from '@headlessui/vue';
 
 
+const isOpeneditar = ref(false);
+const isOpenpermisos = ref(false);
+
 
 const users = ref([]);
 const actual_user = ref([]);
@@ -31,6 +34,15 @@ const fetchUsers = async () => {
 
 const seleccionar_operador = (user) => {
 actual_user.value = user;
+}
+
+const editar_pass = (usuario) =>{
+  isOpeneditar.value = true;
+
+}
+
+const closeModalEditar = () =>{
+  isOpeneditar.value = false;
 }
 
 
@@ -55,7 +67,7 @@ onMounted(fetchUsers);
             <td class="text-center border border-slate-700 hover:cursor-pointer" @click="seleccionar_operador(user)">{{user.id}}</td>
             <td class="text-center border border-slate-700 hover:cursor-pointer" @click="seleccionar_operador(user)">{{user.name}}</td>
             <td class="text-center border border-slate-700 hover:cursor-pointer" @click="seleccionar_operador(user)">{{user.email}}</td>
-            <td class="text-center border border-slate-700 flex flex-col"><span class="text-blue-500 hover:cursor-pointer">Editar contraseña</span>
+            <td class="text-center border border-slate-700 flex flex-col"><span class="text-blue-500 hover:cursor-pointer" @click="editar_pass(user)">Editar contraseña</span>
               <span class="text-blue-500 hover:cursor-pointer">Editar permisos</span></td>
 
           </tr>
@@ -102,6 +114,57 @@ onMounted(fetchUsers);
       </tbody>
     </table>
     </div>
+    <TransitionRoot appear :show="isOpeneditar" as="template">
+    <Dialog as="div" @close="closeModalEditar" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black/25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-[50%] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h3"
+                class="text-2xl font-bold text-blue-500"
+              >
+                Editar contraseña
+              </DialogTitle>
+              <div class="mt-2">
+              <div class="flex flex-col">
+                <form @submit.prevent="submitGestion('competencia')">
+       
+      </form>
+              </div>
+              </div>
+              <div class="flex justify-center mt-16">
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
   </template>
   <style scoped>
   </style>
