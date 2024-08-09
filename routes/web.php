@@ -59,6 +59,9 @@ Route::post('/api/getGestiones', [GestionController::class, 'getGestiones'])->mi
 Route::post('/eliminar-gestion', [GestionController::class, 'eliminarGestion'])->middleware(['auth', 'verified']);
 Route::post('/editar-gestion', [GestionController::class, 'editarGestion'])->middleware(['auth', 'verified'])->name('editar-gestion');
 Route::post('/editar-acepto', [GestionController::class, 'editarAcepto'])->middleware(['auth', 'verified'])->name('editar-acepto');
+Route::post('/editar-acepto', [GestionController::class, 'editarAcepto'])->middleware(['auth', 'verified'])->name('editar-acepto');
+Route::post('/cliente/guardar-permisos', [ClienteController::class, 'guardarPermisos'])->middleware(['auth', 'verified'])->name('cliente.guardarPermisos');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

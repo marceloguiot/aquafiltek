@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Cliente;
 use App\Models\Comentarios;
+use App\Models\Permiso;
 
 class ClienteController extends Controller
 {
@@ -80,5 +81,33 @@ class ClienteController extends Controller
     $clientes = Cliente::where($field, 'LIKE', "%{$value}%")->get();
 
     return response()->json($clientes);
+}
+
+public function guardarPermisos(Request $request)
+{
+
+
+        $user = $request->id_user;
+        $clientes = filter_var($request->clientes, FILTER_VALIDATE_BOOLEAN);
+        $inactivar = filter_var($request->inactivacion, FILTER_VALIDATE_BOOLEAN);
+    // Buscar si ya existe un registro de permisos para el usuario
+    $permiso = Permiso::where('id_user', $user)->first();
+
+    if ($permiso) {
+        // Actualizar el permiso existente
+        $permiso->editar = $clientes;
+        $permiso->inactivar = $inactivar;
+        $permiso->save();
+    } else {
+        // Crear un nuevo registro de permisos
+        Permiso::create([
+            'id_user' => $request->id_user,
+            'editar' => $clientes,
+            'inactivar' => $inactivar
+        ]);
+    }
+
+    // Redireccionar o devolver una respuesta exitosa
+    return response()->json('Listo', 200);
 }
 }

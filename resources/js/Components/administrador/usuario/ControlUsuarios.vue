@@ -8,6 +8,7 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/vue';
+import Swal from 'sweetalert2';
 
 
 const isOpeneditar = ref(false);
@@ -42,6 +43,7 @@ const editar_pass = (usuario) =>{
 }
 
 const editar_permisos = (usuario) =>{
+  actual_user.value = usuario;
   isOpenpermisos.value = true;
 
 }
@@ -59,11 +61,21 @@ const submitForm = async () => {
   try {
     const response = await axios.post('/cliente/guardar-permisos', {
       clientes: permisos.value.clientes,
-      inactivacion: permisos.value.inactivacion
+      inactivacion: permisos.value.inactivacion,
+      id_user: actual_user.value.id
     });
     
     // Manejar la respuesta aquí (opcional)
-    console.log('Permisos guardados correctamente:', response.data);
+    if(response.data == 'Listo')
+    {
+      isOpenpermisos.value = false;
+      Swal.fire({
+      title: "¡Actualizados!",
+      text: "Permisos guardados correctamente.",
+      confirmButtonText: "Aceptar",
+      icon: "success"
+    });
+    }
   } catch (error) {
     // Manejar el error aquí
     console.error('Error al guardar permisos:', error);
@@ -235,14 +247,14 @@ onMounted(fetchUsers);
               <div class="flex flex-col">
                 
            <!-- Primer Apartado -->
-    <div class="mb-6 mt-6">
+    <div class="mb-6 mt-4">
+      <h2 class="text-xl font-semibold mb-4">{{ actual_user.name }}</h2>
       <h3 class="text-xl font-semibold mb-2">Permisos de Clientes</h3>
-      
       <div class="flex items-center mb-4">
         <input 
           type="radio" 
           id="agregar_modificar" 
-          value="agregar_modificar" 
+          value=true 
           v-model="permisos.clientes" 
           class="mr-2"
         />
@@ -253,7 +265,7 @@ onMounted(fetchUsers);
         <input 
           type="radio" 
           id="no_agregar" 
-          value="no_agregar" 
+          value=false
           v-model="permisos.clientes" 
           class="mr-2"
         />
@@ -269,7 +281,7 @@ onMounted(fetchUsers);
         <input 
           type="radio" 
           id="puede_inactivar" 
-          value="puede_inactivar" 
+          value=true 
           v-model="permisos.inactivacion" 
           class="mr-2"
         />
@@ -280,7 +292,7 @@ onMounted(fetchUsers);
         <input 
           type="radio" 
           id="no_inactivar" 
-          value="no_inactivar" 
+          value=false
           v-model="permisos.inactivacion" 
           class="mr-2"
         />
