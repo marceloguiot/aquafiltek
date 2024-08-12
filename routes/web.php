@@ -7,6 +7,9 @@ use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\ProvinciaController;
+
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -38,6 +41,10 @@ Route::get('/gestiones-aceptadas', [GestionController::class, 'getGestionesAcept
 Route::get('/cliente-nombre/{id_gestion}', [GestionController::class, 'getClienteNombre'])->middleware(['auth', 'verified'])->name('cliente-nombre');
 Route::get('/admin', function () { return Inertia::render('VistaAdm');})->middleware(['auth', 'verified'])->name('admin');
 Route::get('/users', [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('users');
+Route::get('api/provincias', [ProvinciaController::class, 'index'])->middleware(['auth', 'verified'])->name('provincias');
+Route::get('api/cantones', [CantonController::class, 'index'])->middleware(['auth', 'verified'])->name('cantones');
+Route::get('api/parroquias', [ParroquiaController::class, 'index'])->middleware(['auth', 'verified'])->name('parroquias');
+Route::get('/api/inactive-clients', [ClienteController::class, 'getInactiveClients'])->middleware(['auth', 'verified'])->name('inactive-clients');
 
 
 
@@ -61,6 +68,7 @@ Route::post('/editar-gestion', [GestionController::class, 'editarGestion'])->mid
 Route::post('/editar-acepto', [GestionController::class, 'editarAcepto'])->middleware(['auth', 'verified'])->name('editar-acepto');
 Route::post('/editar-acepto', [GestionController::class, 'editarAcepto'])->middleware(['auth', 'verified'])->name('editar-acepto');
 Route::post('/cliente/guardar-permisos', [ClienteController::class, 'guardarPermisos'])->middleware(['auth', 'verified'])->name('cliente.guardarPermisos');
+Route::post('/grupos-poblacionales', [ClienteController::class, 'guardarPermisos'])->middleware(['auth', 'verified'])->name('grupos-poblacionales');
 
 
 Route::middleware('auth')->group(function () {
