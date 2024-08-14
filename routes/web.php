@@ -45,6 +45,8 @@ Route::get('api/provincias', [ProvinciaController::class, 'index'])->middleware(
 Route::get('api/cantones', [CantonController::class, 'index'])->middleware(['auth', 'verified'])->name('cantones');
 Route::get('api/parroquias', [ParroquiaController::class, 'index'])->middleware(['auth', 'verified'])->name('parroquias');
 Route::get('/api/inactive-clients', [ClienteController::class, 'getInactiveClients'])->middleware(['auth', 'verified'])->name('inactive-clients');
+Route::get('/api/new-clients', [ClienteController::class, 'getNewClients']);
+
 
 
 

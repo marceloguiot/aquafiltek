@@ -110,4 +110,14 @@ public function guardarPermisos(Request $request)
     // Redireccionar o devolver una respuesta exitosa
     return response()->json('Listo', 200);
 }
+
+// In ClienteController.php
+
+public function getNewClients()
+{
+   
+    $newClients = Cliente::where('estado', 'Nuevo')->get();
+    return response()->json($newClients);
+}
+
 }
