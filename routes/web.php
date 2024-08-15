@@ -46,6 +46,7 @@ Route::get('api/cantones', [CantonController::class, 'index'])->middleware(['aut
 Route::get('api/parroquias', [ParroquiaController::class, 'index'])->middleware(['auth', 'verified'])->name('parroquias');
 Route::get('/api/inactive-clients', [ClienteController::class, 'getInactiveClients'])->middleware(['auth', 'verified'])->name('inactive-clients');
 Route::get('/api/new-clients', [ClienteController::class, 'getNewClients']);
+Route::get('/permisos', [UserController::class, 'fetchPermisos'])->middleware(['auth', 'verified'])->name('permisos');
 
 
 
@@ -71,6 +72,7 @@ Route::post('/editar-acepto', [GestionController::class, 'editarAcepto'])->middl
 Route::post('/editar-acepto', [GestionController::class, 'editarAcepto'])->middleware(['auth', 'verified'])->name('editar-acepto');
 Route::post('/cliente/guardar-permisos', [ClienteController::class, 'guardarPermisos'])->middleware(['auth', 'verified'])->name('cliente.guardarPermisos');
 Route::post('/grupos-poblacionales', [ClienteController::class, 'guardarPermisos'])->middleware(['auth', 'verified'])->name('grupos-poblacionales');
+Route::post('/cliente/inactivar', [ClienteController::class, 'registrarInactivacion'])->middleware(['auth', 'verified'])->name('cliente.inactivar');
 
 
 Route::middleware('auth')->group(function () {

@@ -16,9 +16,11 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/vue';
+import axios from 'axios';
 
 const { props } = usePage();
 const isOpenLlamada = ref(false);
+const isOpenInac = ref(false);
 
 const datos = ref(props.datos.previas.original);
 
@@ -32,6 +34,9 @@ const actual = ref(props.datos.actual);
 const comentarios = ref([]);
 const gestionesPast = ref([]);
 const upcomingLlamadas = ref([]);
+const permiso_editar = ref(0);
+const permiso_inactivar = ref(0);
+const motivo = ref("");
 const handleClienteSeleccionado = async (cliente) => {
   actual.value = await cliente;
   fetchComentarios();
@@ -104,12 +109,51 @@ const fetchPasadas = async () => {
   }
 }
 
+const fetchPermisos = async () => {
+  try {
+        const response = await axios.get('/permisos');
+        console.log(response.data.editar);
+        permiso_editar.value = response.data.editar;
+        permiso_inactivar.value = response.data.inactivar;
+    } catch (error) {
+        console.error("Error fetching permisos:", error);
+        return null;
+    }
+}
+
 function closeModal() {
   isOpenLlamada.value = false;
 }
 
+function closeModalInac() {
+  isOpenInac.value = false;
+}
+
+
+const inactivar = () => {
+  isOpenInac.value = true;
+}
+
+
+const registrar_inactivo = async (id_cliente) => {
+  try {
+        const response = await axios.post('/cliente/inactivar', {
+            id_cliente: id_cliente,
+            motivo: motivo,
+        });
+
+        if (response.data.success) {
+            console.log('Inactivation registered successfully:', response.data.data);
+        } else {
+            console.error('Failed to register inactivation:', response.data.message);
+        }
+    } catch (error) {
+        console.error('Error during inactivation registration:', error);
+    }
+}
       onBeforeMount(fetchComentarios);
       onBeforeMount(fetchPasadas);
+      onBeforeMount(fetchPermisos);
       onBeforeMount(getClients);
 
 </script>
@@ -147,6 +191,9 @@ function closeModal() {
                   </div>
                 </div>
                 <ModalGestion  :actual="actual"  :key="actual.codigo" :scope="'gestion'" @updateEjecutado="handleUpdateEjecutado" />
+                <div v-if="permiso_inactivar == 1">
+                  <button class="bg-yellow-400 hover:bg-yellow-500 font-semibold p-2 rounded-md mb-4" @click="inactivar()">Inactivar cliente</button>
+                </div>
                 <div class="flex flex-col">
                 <ClienteInfo :actual="actual" :ventas="gestionesPast" />
                 </div>
@@ -224,6 +271,62 @@ function closeModal() {
               </div>
               </div>
               <div class="flex justify-center mt-16">
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
+  <TransitionRoot appear :show="isOpenInac" as="template">
+    <Dialog as="div" @close="closeModalInac" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black/25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-[60%] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h3"
+                class="text-2xl font-bold text-blue-500"
+              >
+                Inactivar cliente
+              </DialogTitle>
+              <div class="mt-2">
+
+              </div>
+              <div class="flex flex-col mt-6 mb-10">
+                <div class="flex flex-col">
+                <label class="font-semibold">Cliente:</label>
+                  <span>{{actual.nombre_cliente}}</span>
+              </div>
+                <label class="font-semibold mb-2 mt-5">Motivo de inactivación:</label>
+
+                <textarea v-model="motivo"></textarea>
+                <button class="mt-5 bg-sky-500 rounded-md p-2 text-white hover:bg-sky-400" @click="registrar_inactivo(actual.id)">Guardar</button>
               </div>
             </DialogPanel>
           </TransitionChild>

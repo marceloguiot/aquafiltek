@@ -111,13 +111,50 @@ public function guardarPermisos(Request $request)
     return response()->json('Listo', 200);
 }
 
-// In ClienteController.php
 
 public function getNewClients()
 {
    
     $newClients = Cliente::where('estado', 'Nuevo')->get();
     return response()->json($newClients);
+}
+
+public function getInactiveClients()
+{
+    // Retrieve all clients where 'inactivo' is 1
+    $inactiveClients = Cliente::where('inactivo', 1)->get();
+
+    // Return the result as a JSON response
+    return response()->json($inactiveClients);
+}
+
+public function registrarInactivacion(Request $request)
+{
+    // Validate the request
+    $validatedData = $request->validate([
+        'id_cliente' => 'required|integer',  // Assuming 'clientes' is the table where clients are stored
+        'motivo' => 'required|string|max:255',
+    ]);
+
+    // Get current date and time
+    $fecha = now()->format('Y-m-d');
+    $hora = now()->format('H:i:s');
+
+    // Create the inactivation record
+    $gestionInactivo = GestionInactivos::create([
+        'id_operador' => auth()->id(),  // Assuming the logged-in user's ID is the operator
+        'codigo_cliente' => $validatedData['id_cliente'],
+        'motivo' => $validatedData['motivo'],
+        'fecha' => $fecha,
+        'hora' => $hora,
+    ]);
+
+    // Return a success response
+    return response()->json([
+        'success' => true,
+        'message' => 'Inactivation registered successfully',
+        'data' => $gestionInactivo
+    ]);
 }
 
 }
