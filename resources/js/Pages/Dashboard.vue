@@ -139,9 +139,8 @@ const registrar_inactivo = async (id_cliente) => {
   try {
         const response = await axios.post('/cliente/inactivar', {
             id_cliente: id_cliente,
-            motivo: motivo,
+            motivo: motivo.value,
         });
-
         if (response.data.success) {
             console.log('Inactivation registered successfully:', response.data.data);
         } else {

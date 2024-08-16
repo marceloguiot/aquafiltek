@@ -36,15 +36,13 @@
   import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
   import { Head } from '@inertiajs/vue3';
   
-  const tabs = ['Usuarios', 'Control permisos', 'Inactivos', 'Generar reportes', 'Control Escalas', 'Tira informativa'];
+  const tabs = ['Usuarios', 'Inactivos', 'Generar reportes', 'Control Escalas', 'Tira informativa'];
   const activeTab = ref('Usuarios');
   
   const currentTabComponent = computed(() => {
     switch (activeTab.value) {
       case 'Usuarios':
         return Usuarios;
-      case 'Control permisos':
-        return ControlPermisos;
       case 'Inactivos':
         return Inactivos;
       case 'Generar reportes':

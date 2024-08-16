@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Cliente;
 use App\Models\Comentarios;
+use App\Models\GestionInactivos;
 use App\Models\Permiso;
 
 class ClienteController extends Controller
@@ -148,6 +149,10 @@ public function registrarInactivacion(Request $request)
         'fecha' => $fecha,
         'hora' => $hora,
     ]);
+
+    $cliente = Cliente::find($validatedData['id_cliente']);
+    $cliente->inactivo = 1;
+    $cliente->save();
 
     // Return a success response
     return response()->json([
