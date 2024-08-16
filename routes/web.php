@@ -50,7 +50,6 @@ Route::get('/permisos', [UserController::class, 'fetchPermisos'])->middleware(['
 
 
 
-
 //metodo POST
 Route::post('/cliente',[ClienteController::class, 'store'])->middleware(['auth', 'verified']);
 Route::post('/gestion_acepto',[GestionController::class, 'acepto'])->middleware(['auth', 'verified']);
@@ -73,6 +72,7 @@ Route::post('/editar-acepto', [GestionController::class, 'editarAcepto'])->middl
 Route::post('/cliente/guardar-permisos', [ClienteController::class, 'guardarPermisos'])->middleware(['auth', 'verified'])->name('cliente.guardarPermisos');
 Route::post('/grupos-poblacionales', [ClienteController::class, 'guardarPermisos'])->middleware(['auth', 'verified'])->name('grupos-poblacionales');
 Route::post('/cliente/inactivar', [ClienteController::class, 'registrarInactivacion'])->middleware(['auth', 'verified'])->name('cliente.inactivar');
+Route::post('/cliente/reactivar', [ClienteController::class, 'activarCliente'])->middleware(['auth', 'verified'])->name('cliente.reactivar');
 
 
 Route::middleware('auth')->group(function () {

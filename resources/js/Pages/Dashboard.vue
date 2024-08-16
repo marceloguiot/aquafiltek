@@ -146,6 +146,7 @@ const registrar_inactivo = async (id_cliente) => {
         } else {
             console.error('Failed to register inactivation:', response.data.message);
         }
+        location.reload();
     } catch (error) {
         console.error('Error during inactivation registration:', error);
     }
@@ -325,7 +326,7 @@ const registrar_inactivo = async (id_cliente) => {
                 <label class="font-semibold mb-2 mt-5">Motivo de inactivación:</label>
 
                 <textarea v-model="motivo"></textarea>
-                <button class="mt-5 bg-sky-500 rounded-md p-2 text-white hover:bg-sky-400" @click="registrar_inactivo(actual.id)">Guardar</button>
+                <button class="mt-5 bg-sky-500 rounded-md p-2 text-white hover:bg-sky-400" @click="registrar_inactivo(actual.codigo)">Guardar</button>
               </div>
             </DialogPanel>
           </TransitionChild>

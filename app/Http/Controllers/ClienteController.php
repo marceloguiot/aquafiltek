@@ -122,8 +122,18 @@ public function getNewClients()
 
 public function getInactiveClients()
 {
-    // Retrieve all clients where 'inactivo' is 1
-    $inactiveClients = Cliente::where('inactivo', 1)->get();
+    // Retrieve all clients where 'inactivo' is 1, join with gestion_inactivos and users
+    $inactiveClients = Cliente::where('clientes.inactivo', 1)
+        ->leftJoin('gestion_inactivos', 'clientes.codigo', '=', 'gestion_inactivos.codigo_cliente')
+        ->leftJoin('users', 'gestion_inactivos.id_operador', '=', 'users.id')
+        ->select(
+            'clientes.*', 
+            'gestion_inactivos.motivo', 
+            'gestion_inactivos.fecha', 
+            'gestion_inactivos.hora', 
+            'users.name as operador_name'
+        )
+        ->get();
 
     // Return the result as a JSON response
     return response()->json($inactiveClients);
@@ -133,7 +143,7 @@ public function registrarInactivacion(Request $request)
 {
     // Validate the request
     $validatedData = $request->validate([
-        'id_cliente' => 'required|integer',  // Assuming 'clientes' is the table where clients are stored
+        'id_cliente' => 'required|string',  // Assuming 'clientes' is the table where clients are stored
         'motivo' => 'required|string|max:255',
     ]);
 
@@ -150,9 +160,14 @@ public function registrarInactivacion(Request $request)
         'hora' => $hora,
     ]);
 
-    $cliente = Cliente::find($validatedData['id_cliente']);
+    $cliente = Cliente::where('codigo', $validatedData['id_cliente'])->first();
+
+if ($cliente) {
     $cliente->inactivo = 1;
     $cliente->save();
+} else {
+    // Manejar el caso donde el cliente no fue encontrado
+}
 
     // Return a success response
     return response()->json([
@@ -161,5 +176,23 @@ public function registrarInactivacion(Request $request)
         'data' => $gestionInactivo
     ]);
 }
+
+public function activarCliente(Request $request)
+{
+    // Actualizar el campo 'inactivo' a 0 en la tabla 'clientes'
+    $cliente = Cliente::where('codigo', $request->codigo)->first();
+    if ($cliente) {
+        $cliente->inactivo = 0;
+        $cliente->save();
+
+        // Eliminar el registro asociado en la tabla 'gestion_inactivos'
+        GestionInactivos::where('codigo_cliente', $request->codigo)->delete();
+
+        return response()->json(['message' => 'Cliente activado y registro eliminado'], 200);
+    }
+
+    return response()->json(['message' => 'Cliente no encontrado'], 404);
+}
+
 
 }

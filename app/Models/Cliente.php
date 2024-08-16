@@ -53,4 +53,9 @@ class Cliente extends Model
         return $this->hasMany(LlamadasProgramadas::class, 'codigo', 'codigo');
     }
 
+    public function gestionInactivo()
+{
+    return $this->hasOne(GestionInactivos::class, 'codigo_cliente', 'codigo');
+}
+
 }
