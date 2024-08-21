@@ -73,7 +73,8 @@ Route::post('/cliente/guardar-permisos', [ClienteController::class, 'guardarPerm
 Route::post('/grupos-poblacionales', [ClienteController::class, 'guardarPermisos'])->middleware(['auth', 'verified'])->name('grupos-poblacionales');
 Route::post('/cliente/inactivar', [ClienteController::class, 'registrarInactivacion'])->middleware(['auth', 'verified'])->name('cliente.inactivar');
 Route::post('/cliente/reactivar', [ClienteController::class, 'activarCliente'])->middleware(['auth', 'verified'])->name('cliente.reactivar');
-
+Route::post('/guardar-escalas', [UserController::class, 'guardarEscalas'])->middleware(['auth', 'verified'])->name('guardar.escalas');
+Route::post('/tira-informativa', [UserController::class, 'guardarTira'])->middleware(['auth', 'verified'])->name('guardar.tira');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

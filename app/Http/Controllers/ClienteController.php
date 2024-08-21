@@ -188,7 +188,7 @@ public function activarCliente(Request $request)
         // Eliminar el registro asociado en la tabla 'gestion_inactivos'
         GestionInactivos::where('codigo_cliente', $request->codigo)->delete();
 
-        return response()->json(['message' => 'Cliente activado y registro eliminado'], 200);
+        return response()->json(['message' => 'exito'], 200);
     }
 
     return response()->json(['message' => 'Cliente no encontrado'], 404);

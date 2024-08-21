@@ -1,18 +1,20 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 // Variables reactivas
 const selectedOperador = ref(null);
 const users = ref([]);
 const actual = ref([]);
+const error = ref(null);
 
-const niveles = ref([
-  { label: 'Nivel 2', valor: 0 },
-  { label: 'Nivel 4', valor: 0 },
-  { label: 'Nivel 6', valor: 0 },
-  { label: 'Nivel 8', valor: 0 },
-  { label: 'Nivel 10', valor: 0 }
+const escalas = ref([
+    { escala_id: 2, numero: 0 },
+    { escala_id: 4, numero: 0 },
+    { escala_id: 6, numero: 0 },
+    { escala_id: 8, numero: 0 },
+    { escala_id: 10, numero: 0 },
 ]);
 
 // Cargar los usuarios al montar el componente
@@ -21,19 +23,53 @@ onMounted(async () => {
   users.value = response.data;
 });
 
+const validateForm = () => {
+  if (!selectedOperador.value) {
+    error.value = 'Seleccione un operador.';
+    return false;
+  }
+  if (escalas.value.some((nivel) => nivel.numero === 0)) {
+    error.value = 'Todos los niveles deben tener un número mayor a 0.';
+    return false;
+  }
+  error.value = null;
+  return true;
+};
+
 // Función para guardar las escalas
 const guardarEscalas = async () => {
   const data = {
-    operador: selectedOperador.value,
-    escalas: niveles.value
+    usuario_id: selectedOperador.value,
+    escalas: escalas.value
   };
-  
+  if (!validateForm()){
+
+    Swal.fire({
+      title: "¡Error!",
+      text: error.value,
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+    return;
+  }
+
   try {
-    await axios.post('/api/guardar-escalas', data);
-    alert('Escalas guardadas exitosamente');
+    alert(data.usuario_id);
+    await axios.post('/guardar-escalas', data);
+    Swal.fire({
+      title: "¡Escalas actualizadas!",
+      text: "Las escalas se almacenaron correctamente.",
+      confirmButtonText: "Aceptar",
+      icon: "success"
+    });
   } catch (error) {
     console.error('Error al guardar escalas:', error);
-    alert('Hubo un error al guardar las escalas');
+    Swal.fire({
+      title: "¡Error!",
+      text: "No se ha podido guardar la información de escalas.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
   }
 };
 </script>
@@ -61,10 +97,10 @@ const guardarEscalas = async () => {
           </tr>
         </thead>
         <tbody class="bg-slate-200">
-          <tr v-for="nivel in niveles" :key="nivel.label">
-            <td class="border-b border-gray-200 px-4 py-2">{{ nivel.label }}</td>
+          <tr v-for="nivel in escalas" :key="nivel.label">
+            <td class="border-b border-gray-200 px-4 py-2">Nivel {{ nivel.escala_id }}</td>
             <td class="border-b border-gray-200 px-4 py-2">
-              <input type="number" v-model="nivel.valor" class="w-full border border-gray-300 rounded px-3 py-2">
+              <input type="number" v-model="nivel.numero" class="w-full border border-gray-300 rounded px-3 py-2">
             </td>
           </tr>
         </tbody>

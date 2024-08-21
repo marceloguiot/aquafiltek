@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const clients = ref([]);
 
@@ -18,10 +19,20 @@ const reactivar = async (codigo) => {
         const response = await axios.post('/cliente/reactivar', {
             codigo: codigo,
         });
-        if (response.data.success) {
-            console.log('Reactivation realizada exitosamente:', response.data.data);
+        if (response.data.message == 'exito') {
+          Swal.fire({
+      title: "¡Cliente reactivado!",
+      text: "El cliente fue reactivado correctamente.",
+      confirmButtonText: "Aceptar",
+      icon: "success"
+    });
         } else {
-            console.error('No se pudo reactivar:', response.data.message);
+          Swal.fire({
+      title: "¡Cliente no reactivado!",
+      text: "Ocurrio un error, favor de reintentar más tarde.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
         }
 
        fetchInactiveClients();
