@@ -54,7 +54,6 @@ const guardarEscalas = async () => {
   }
 
   try {
-    alert(data.usuario_id);
     await axios.post('/guardar-escalas', data);
     Swal.fire({
       title: "¡Escalas actualizadas!",
@@ -62,6 +61,15 @@ const guardarEscalas = async () => {
       confirmButtonText: "Aceptar",
       icon: "success"
     });
+    selectedOperador.value = null;
+    escalas.value = [
+    { escala_id: 2, numero: 0 },
+    { escala_id: 4, numero: 0 },
+    { escala_id: 6, numero: 0 },
+    { escala_id: 8, numero: 0 },
+    { escala_id: 10, numero: 0 },
+];
+
   } catch (error) {
     console.error('Error al guardar escalas:', error);
     Swal.fire({
@@ -81,6 +89,7 @@ const guardarEscalas = async () => {
     <div class="mb-6">
       <label for="operador" class="block text-gray-700 font-medium mb-2">Seleccionar operador</label>
       <select v-model="selectedOperador" class="block w-full border border-gray-300 rounded px-3 py-2">
+        <option value="null">-SELECCIONE-</option>
         <option v-for="user in users" :key="user.id" :value="user.id">
           {{ user.name }}
         </option>

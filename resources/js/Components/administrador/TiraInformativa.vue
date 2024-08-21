@@ -39,6 +39,10 @@ if(!tira.value.minutos)
       confirmButtonText: "Aceptar",
       icon: "success"
     });
+
+    tira.value.permanente = 0;
+    tira.value.mensaje = '';
+    tira.value.minutos = '';
     // Optionally reset the form or provide feedback to the user
   } catch (error) {
     console.error('Error al guardar la Tira Informativa:', error);

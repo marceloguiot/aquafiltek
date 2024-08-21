@@ -215,9 +215,8 @@ const registrar_inactivo = async (id_cliente) => {
         <footer class="bg-gray-800 text-white py-4 mt-auto sticky bottom-0">
       <div class="container mx-auto text-center">
         <div v-if="mensajes.length">
-          <div v-for="mensaje in mensajes" :key="mensaje.id" class="mb-2">
-            <p class="text-sm">{{ mensaje.mensaje }}</p>
-            <p v-if="!mensaje.permanente" class="text-xs text-gray-400">{{ mensaje.minutos }} minutes</p>
+          <div v-for="(mensaje, index) in mensajes" :key="mensaje.id" class="mb-2">
+            <p class="text-md  animate-marquee w-1/2" v-if="index == 0">{{ mensaje.mensaje }}</p>
           </div>
         </div>
         <div v-else>
@@ -225,6 +224,7 @@ const registrar_inactivo = async (id_cliente) => {
         </div>
       </div>
     </footer>
+    
     </AuthenticatedLayout>
 
 
@@ -361,3 +361,17 @@ const registrar_inactivo = async (id_cliente) => {
   </TransitionRoot>
     
 </template>
+<style scoped>
+@keyframes marquee {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 10s linear infinite;
+}
+</style>
