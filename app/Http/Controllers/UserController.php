@@ -8,6 +8,7 @@ use Auth;
 use App\Models\Permiso;
 use App\Models\UserEscala;
 use App\Models\TiraInformativa;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -78,5 +79,11 @@ class UserController extends Controller
 
     return response()->json($tiraInformativa, 201);
     }
+
+    public function getTiraInformativa()
+{
+    $mensajes = DB::table('tira_informativa')->get();
+    return response()->json($mensajes);
+}
     
 }

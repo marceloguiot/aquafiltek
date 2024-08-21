@@ -47,6 +47,8 @@ Route::get('api/parroquias', [ParroquiaController::class, 'index'])->middleware(
 Route::get('/api/inactive-clients', [ClienteController::class, 'getInactiveClients'])->middleware(['auth', 'verified'])->name('inactive-clients');
 Route::get('/api/new-clients', [ClienteController::class, 'getNewClients']);
 Route::get('/permisos', [UserController::class, 'fetchPermisos'])->middleware(['auth', 'verified'])->name('permisos');
+Route::get('/tira-informativa', [UserController::class, 'getTiraInformativa'])->middleware(['auth', 'verified'])->name('getTira');
+
 
 
 

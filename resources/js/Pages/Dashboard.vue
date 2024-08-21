@@ -21,6 +21,7 @@ import axios from 'axios';
 const { props } = usePage();
 const isOpenLlamada = ref(false);
 const isOpenInac = ref(false);
+const mensajes = ref([]);
 
 const datos = ref(props.datos.previas.original);
 
@@ -41,6 +42,16 @@ const handleClienteSeleccionado = async (cliente) => {
   actual.value = await cliente;
   fetchComentarios();
 };
+
+const fetchMensajes = async () => {
+  try {
+    const response = await axios.get('/tira-informativa');
+    mensajes.value = response.data;
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+  }
+};
+
 const fetchUpcomingLlamadas = async () => {
   try {
     const response = await axios.get('/llamadas/upcoming');
@@ -65,6 +76,7 @@ const handleUpdateEjecutado = (ejecutado) => {
 onMounted(() => {
   fetchUpcomingLlamadas(); // Fetch on mount
   setInterval(fetchUpcomingLlamadas, 60000); // Fetch every minute
+  fetchMensajes();
 });
 
 
@@ -200,6 +212,19 @@ const registrar_inactivo = async (id_cliente) => {
                 <ComentariosHistorico :actual="actual" :items="comentarios" />
             </div>
         </div>
+        <footer class="bg-gray-800 text-white py-4 mt-auto sticky bottom-0">
+      <div class="container mx-auto text-center">
+        <div v-if="mensajes.length">
+          <div v-for="mensaje in mensajes" :key="mensaje.id" class="mb-2">
+            <p class="text-sm">{{ mensaje.mensaje }}</p>
+            <p v-if="!mensaje.permanente" class="text-xs text-gray-400">{{ mensaje.minutos }} minutes</p>
+          </div>
+        </div>
+        <div v-else>
+          <p class="text-sm">No messages available.</p>
+        </div>
+      </div>
+    </footer>
     </AuthenticatedLayout>
 
 
