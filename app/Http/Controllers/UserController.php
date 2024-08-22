@@ -9,6 +9,7 @@ use App\Models\Permiso;
 use App\Models\UserEscala;
 use App\Models\TiraInformativa;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -84,6 +85,34 @@ class UserController extends Controller
 {
     $mensajes = DB::table('tira_informativa')->get();
     return response()->json($mensajes);
+}
+public function getDailyGestiones()
+{
+    // Obtener la fecha de hoy
+    $hoy = Carbon::today();
+
+    // Contar las gestiones del día de hoy en cada tabla
+    $gestionesCount = DB::table('gestiones')
+        ->whereDate('fecha', $hoy)
+        ->count();
+
+    $gestionesAceptadasCount = DB::table('gestiones_aceptadas')
+        ->whereDate('fecha_acepto', $hoy)
+        ->count();
+
+    $gestionesInactivosCount = DB::table('gestion_inactivos')
+        ->whereDate('fecha', $hoy)
+        ->count();
+
+    // Sumar todas las gestiones
+    $totalGestiones = $gestionesCount + $gestionesAceptadasCount + $gestionesInactivosCount;
+
+    return response()->json([
+        'gestionesCount' => $gestionesCount,
+        'gestionesAceptadasCount' => $gestionesAceptadasCount,
+        'gestionesInactivosCount' => $gestionesInactivosCount,
+        'totalGestiones' => $totalGestiones,
+    ]);
 }
     
 }

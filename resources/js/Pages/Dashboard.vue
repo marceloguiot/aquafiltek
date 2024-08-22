@@ -42,7 +42,15 @@ const handleClienteSeleccionado = async (cliente) => {
   actual.value = await cliente;
   fetchComentarios();
 };
-
+const gestiones = ref(null);
+const fetchGestionesDiarias = async () => {
+  try {
+    const response = await axios.get('/gestiones-diarias');
+    gestiones.value = response.data;
+  } catch (error) {
+    console.error('Error al obtener las gestiones diarias:', error);
+  }
+};
 const fetchMensajes = async () => {
   try {
     const response = await axios.get('/tira-informativa');
@@ -77,6 +85,7 @@ onMounted(() => {
   fetchUpcomingLlamadas(); // Fetch on mount
   setInterval(fetchUpcomingLlamadas, 60000); // Fetch every minute
   fetchMensajes();
+  fetchGestionesDiarias();
 });
 
 
@@ -212,6 +221,15 @@ const registrar_inactivo = async (id_cliente) => {
                 <ComentariosHistorico :actual="actual" :items="comentarios" />
             </div>
         </div>
+        <div class="sticky bottom-1 bg-slate-300">
+    <h1 class="text-lg font-bold">Gestiones del día</h1>
+    <div v-if="gestiones" class="flex flex-row w-full justify-around">
+      <p>Gestiones pendientes: {{ gestiones.gestionesCount }}</p>
+      <p>Gestiones aceptadas: {{ gestiones.gestionesAceptadasCount }}</p>
+      <p>Gestiones inactivas: {{ gestiones.gestionesInactivosCount }}</p>
+      <p>Total de gestiones: {{ gestiones.totalGestiones }}</p>
+    </div>
+  </div>
         <footer class="bg-gray-800 text-white py-4 mt-auto sticky bottom-0">
       <div class="container mx-auto text-center">
         <div v-if="mensajes.length">
