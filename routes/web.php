@@ -45,6 +45,7 @@ Route::get('api/provincias', [ProvinciaController::class, 'index'])->middleware(
 Route::get('api/cantones', [CantonController::class, 'index'])->middleware(['auth', 'verified'])->name('cantones');
 Route::get('api/parroquias', [ParroquiaController::class, 'index'])->middleware(['auth', 'verified'])->name('parroquias');
 Route::get('/api/inactive-clients', [ClienteController::class, 'getInactiveClients'])->middleware(['auth', 'verified'])->name('inactive-clients');
+Route::get('/api/archived-clients', [ClienteController::class, 'getArchivedClients'])->middleware(['auth', 'verified'])->name('archived-clients');
 Route::get('/api/new-clients', [ClienteController::class, 'getNewClients']);
 Route::get('/permisos', [UserController::class, 'fetchPermisos'])->middleware(['auth', 'verified'])->name('permisos');
 Route::get('/tira-informativa', [UserController::class, 'getTiraInformativa'])->middleware(['auth', 'verified'])->name('getTira');
@@ -76,6 +77,8 @@ Route::post('/editar-acepto', [GestionController::class, 'editarAcepto'])->middl
 Route::post('/cliente/guardar-permisos', [ClienteController::class, 'guardarPermisos'])->middleware(['auth', 'verified'])->name('cliente.guardarPermisos');
 Route::post('/grupos-poblacionales', [ClienteController::class, 'guardarPermisos'])->middleware(['auth', 'verified'])->name('grupos-poblacionales');
 Route::post('/cliente/inactivar', [ClienteController::class, 'registrarInactivacion'])->middleware(['auth', 'verified'])->name('cliente.inactivar');
+Route::post('/cliente/archivar', [ClienteController::class, 'archivarCliente'])->middleware(['auth', 'verified'])->name('cliente.archivar');
+Route::post('/cliente/desarchivar', [ClienteController::class, 'desarchivarCliente'])->middleware(['auth', 'verified'])->name('cliente.desarchivar');
 Route::post('/cliente/reactivar', [ClienteController::class, 'activarCliente'])->middleware(['auth', 'verified'])->name('cliente.reactivar');
 Route::post('/guardar-escalas', [UserController::class, 'guardarEscalas'])->middleware(['auth', 'verified'])->name('guardar.escalas');
 Route::post('/tira-informativa', [UserController::class, 'guardarTira'])->middleware(['auth', 'verified'])->name('guardar.tira');

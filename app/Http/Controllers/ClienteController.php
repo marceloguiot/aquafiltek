@@ -139,6 +139,56 @@ public function getInactiveClients()
     return response()->json($inactiveClients);
 }
 
+public function getArchivedClients()
+{
+    $archivedClients = Cliente::where('clientes.inactivo', 1)
+    ->where('clientes.archivado', 1)
+    ->leftJoin('gestion_inactivos', 'clientes.codigo', '=', 'gestion_inactivos.codigo_cliente')
+    ->leftJoin('users', 'gestion_inactivos.id_operador', '=', 'users.id')
+    ->select(
+        'clientes.*', 
+        'gestion_inactivos.motivo', 
+        'gestion_inactivos.fecha', 
+        'gestion_inactivos.hora', 
+        'users.name as operador_name'
+    )
+    ->get();
+
+    // Return the result as a JSON response
+    return response()->json($archivedClients);
+}
+
+public function archivarCliente(Request $request)
+{
+    // Buscar el cliente por su código
+    $cliente = Cliente::where('codigo', $request->id_cliente)->first();
+
+    if (!$cliente) {
+        return response()->json(['message' => 'Cliente no encontrado'], 404);
+    }
+
+    // Archivar el cliente (establecer 'archivado' en 1)
+    $cliente->archivado = 1;
+    $cliente->save();
+
+    return response()->json(['message' => 'exito']);
+}
+
+public function desarchivarCliente(Request $request)
+{
+    // Buscar el cliente por su código
+    $cliente = Cliente::where('codigo', $request->id_cliente)->first();
+
+    if (!$cliente) {
+        return response()->json(['message' => 'Cliente no encontrado'], 404);
+    }
+
+    $cliente->archivado = 0;
+    $cliente->save();
+
+    return response()->json(['message' => 'exito']);
+}
+
 public function registrarInactivacion(Request $request)
 {
     // Validate the request

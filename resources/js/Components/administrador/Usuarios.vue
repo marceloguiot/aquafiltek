@@ -19,15 +19,12 @@
         <ControlUsuarios />
       </div>
       <div v-if="activeTab === 2">
-        <CambiarContrasenas />
-      </div>
-      <div v-if="activeTab === 3">
         <GruposPoblacionales />
       </div>
-      <div v-if="activeTab === 4">
+      <div v-if="activeTab === 3">
         <SubirClientes />
       </div>
-      <div v-if="activeTab === 5">
+      <div v-if="activeTab === 4">
         <VerClientesNuevos />
       </div>
     </div>
@@ -37,7 +34,6 @@
   <script setup>
   import CrearUsuario from './usuario/CrearUsuarios.vue';
   import ControlUsuarios from './usuario/ControlUsuarios.vue';
-  import CambiarContrasenas from './usuario/CambiarContrasenas.vue';
   import GruposPoblacionales from './usuario/GruposPoblacionales.vue';
   import SubirClientes from './usuario/SubirClientes.vue';
   import VerClientesNuevos from './usuario/VerClientesNuevos.vue';
@@ -46,7 +42,6 @@
   const tabs = [
   'Crear Usuario',
   'Control de usuarios',
-  'Cambiar contraseñas',
   'Grupos poblacionales',
   'Subir clientes',
   'Ver clientes nuevos',

@@ -37,6 +37,7 @@ class Cliente extends Model
         'obser_cel1',
         'obser_cel2',
         'inactivo',
+        'archivado',
         'tipo_inactivo',
         'actualizar_pendiente',
         'deleted',
