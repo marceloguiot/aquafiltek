@@ -11,6 +11,7 @@ import { ref, computed, reactive, onBeforeUnmount } from 'vue';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { defineEmits } from 'vue';
+import Swal from 'sweetalert2';
 
 const isOpenacepto = ref(false);
 const isOpeninspeccion = ref(false);

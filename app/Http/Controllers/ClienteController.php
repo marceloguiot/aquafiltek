@@ -124,6 +124,7 @@ public function getInactiveClients()
 {
     // Retrieve all clients where 'inactivo' is 1, join with gestion_inactivos and users
     $inactiveClients = Cliente::where('clientes.inactivo', 1)
+        ->where('clientes.archivado', 0)
         ->leftJoin('gestion_inactivos', 'clientes.codigo', '=', 'gestion_inactivos.codigo_cliente')
         ->leftJoin('users', 'gestion_inactivos.id_operador', '=', 'users.id')
         ->select(

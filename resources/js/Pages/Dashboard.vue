@@ -8,6 +8,7 @@ import ModalGestion from '@/Components/ModalGestion.vue';
 import ClienteInfo from '@/Components/ClienteInfo.vue';
 import ComentariosHistorico from '@/Components/ComentariosHistorico.vue';
 import { usePage } from '@inertiajs/vue3';
+import Swal from 'sweetalert2';
 
 import {
   TransitionRoot,
@@ -76,7 +77,18 @@ const fetchUpcomingLlamadas = async () => {
 const handleUpdateEjecutado = (ejecutado) => {
   if(ejecutado == 'true')
 {
-  window.location.reload();
+  Swal.fire({
+      title: "¡gestion guardada!",
+      text: "La gestión se guardo correctamente.",
+      confirmButtonText: "Aceptar",
+      icon: "success"
+    }).then((result) => {
+  /* Read more about isConfirmed, isDenied below */
+  if (result.isConfirmed) {
+    fetchGestiones();
+  }
+});
+  //
 }
 };
 
@@ -130,6 +142,18 @@ const fetchPasadas = async () => {
   }
 }
 
+const fetchGestiones = async () => {
+  try {
+    const response = await axios.get('/gestiones');
+    datos.value = ref(response.data.previas.original);
+    datos_prox.value = ref(response.data.proximas.original);
+    actual.value = ref(response.data.actual);
+
+  } catch (error) {
+    console.error('Error al obtener las gestiones:', error);
+  }
+};
+
 const fetchPermisos = async () => {
   try {
         const response = await axios.get('/permisos');
@@ -162,10 +186,27 @@ const registrar_inactivo = async (id_cliente) => {
             id_cliente: id_cliente,
             motivo: motivo.value,
         });
-        if (response.data.success) {
-            console.log('Inactivation registered successfully:', response.data.data);
+        if (response.data.message == 'Inactivation registered successfully') {
+            
+          Swal.fire({
+      title: "¡Inactivación realizada!",
+      text: "El cliente se inactivo correctamente.",
+      confirmButtonText: "Aceptar",
+      icon: "success"
+    }).then((result) => {
+  /* Read more about isConfirmed, isDenied below */
+  if (result.isConfirmed) {
+    fetchGestiones();
+  }
+});
+
         } else {
-            console.error('Failed to register inactivation:', response.data.message);
+          Swal.fire({
+      title: "¡Error!",
+      text: "No se pudo inactivar, vuelva a intentar más tarde.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
         }
         location.reload();
     } catch (error) {
@@ -176,6 +217,7 @@ const registrar_inactivo = async (id_cliente) => {
       onBeforeMount(fetchPasadas);
       onBeforeMount(fetchPermisos);
       onBeforeMount(getClients);
+
 
 </script>
 

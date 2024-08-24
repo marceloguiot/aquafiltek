@@ -23,6 +23,7 @@ Route::get('/', function () {
 //metodo GET
 
 Route::get('/dashboard', [GestionController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/gestiones', [GestionController::class, 'getClients'])->middleware(['auth', 'verified'])->name('gestiones');
 
 Route::get('/motivate', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('motivate');
 Route::get('/recordatorios', function () { return Inertia::render('Recordatorios');})->middleware(['auth', 'verified'])->name('recordatorios');
