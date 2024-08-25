@@ -153,11 +153,17 @@ function openDesc() {
   isOpendesc.value = true;
   startTimer();
 }
-function closeModalDesc() {
+const closeModalDesc = async () => {
   isOpendesc.value = false;
   stopTimer();
-  resetTimer();
 
+
+  const response = await axios.post('/guardar-descanso', {
+      tipo: 'descanso',
+      tiempo: time.value,
+    });
+
+    resetTimer();
 }
 
 const showsearch = () => {

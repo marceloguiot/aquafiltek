@@ -22,6 +22,10 @@ const isOpenrechazo = ref(false);
 const isOpenaveriado = ref(false);
 const isOpencompetencia = ref(false);
 
+//NUEVAS MODALES
+const isOpennoresponde = ref(false);
+const isOpenequivocado = ref(false);
+const isOpenotro = ref(false);
 
 const emit = defineEmits(['updateEjecutado']);
 
@@ -59,7 +63,7 @@ if(props.scope == 'llamadas'){
 
 
 const reset_acepto = () => {
-  isOpenacepto.value = false;
+isOpenacepto.value = false;
 isOpeninspeccion.value = false;
 isOpencobros.value = false;
 isOpenimportante.value = false;
@@ -67,6 +71,9 @@ isOpenvolver.value = false;
 isOpenrechazo.value = false;
 isOpenaveriado.value = false;
 isOpencompetencia.value = false;
+isOpennoresponde.value = false;
+isOpenequivocado.value = false;
+isOpenotro.value = false;
 
   acepto.value.codigo = props.actual.codigo;
   acepto.value.nombre_cliente = props.actual.nombre_cliente;
@@ -92,6 +99,9 @@ isOpenvolver.value = false;
 isOpenrechazo.value = false;
 isOpenaveriado.value = false;
 isOpencompetencia.value = false;
+isOpennoresponde.value = false;
+isOpenequivocado.value = false;
+isOpenotro.value = false;
 }
 
 
@@ -115,6 +125,19 @@ const submitGestion = async (tipo) => {
   try {
     gestiones.value.tipo = tipo;
     const response = await axios.post('/gestion', gestiones.value);
+    console.log('Datos enviados con éxito:', response.data);
+    emit('updateEjecutado', 'true');
+    reset_gestiones();
+    
+  } catch (error) {
+    console.error('Error al enviar los datos:', error);
+  }
+};
+
+const submitAveriado = async () => {
+  try {
+    gestiones.value.tipo = 'Averiado';
+    const response = await axios.post('/gestion-averiado', gestiones.value);
     console.log('Datos enviados con éxito:', response.data);
     emit('updateEjecutado', 'true');
     reset_gestiones();
@@ -155,9 +178,32 @@ function closeModalImportante() {
   isOpenimportante.value = false;
 }
 
+function closeModalnoresponde() {
+  isOpennoresponde.value = false;
+}
+function closeModalequivocado() {
+  isOpenequivocado.value = false;
+}
+function closeModalotro() {
+  isOpenotro.value = false;
+}
+
 function openVolver() {
   isOpenvolver.value = true;
 }
+
+function openNoresponde() {
+  isOpennoresponde.value = true;
+}
+
+function openEquivocado() {
+  isOpenequivocado.value = true;
+}
+
+function openOtro() {
+  isOpenotro.value = true;
+}
+
 function closeModalVolver() {
   isOpenvolver.value = false;
 }
@@ -191,10 +237,10 @@ function closeModalRechazo() {
                 <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openImportante">Importante</button>
                 <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openVolver">Volver a llamar</button>
                 <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openRechazo">Rechazó</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openVolver">No responde</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openVolver">Equivocado</button>
+                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openNoresponde">No responde</button>
+                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openEquivocado">Equivocado</button>
                 <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openAveriado">Averiado</button>
-                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openVolver">Otro</button>
+                <button class="bg-teal-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-teal-400" @click="openOtro">Otro</button>
                 <button class="bg-red-500 rounded-md lg:text-[15px] lg:p-2 sm:p-1 md:text-[12.5px] text-white hover:bg-red-400" @click="openCompetencia">Competencia</button>
                 </div>
 
@@ -651,6 +697,228 @@ function closeModalRechazo() {
     </Dialog>
   </TransitionRoot>
 
+  <TransitionRoot appear :show="isOpennoresponde" as="template">
+    <Dialog as="div" @close="closeModalnoresponde" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black/25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-[50%] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h3"
+                class="text-2xl font-bold text-blue-500"
+              >
+                Reprogramar llamada
+              </DialogTitle>
+              <div class="mt-2">
+              <div class="flex flex-col">
+                <form @submit.prevent="submitGestion('no responde')">
+                <div class="mb-4">
+            <label for="nombre_cliente" class="block text-gray-700 text-sm font-bold mb-2">Nombre del cliente</label>
+            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.nombre_cliente" readonly required>
+        </div>
+
+        <div class="mb-4">
+            <label for="fecha_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Fecha llamada</label>
+            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.fecha" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="comentarios_adicionales" class="block text-gray-700 text-sm font-bold mb-2">Comentarios adicionales</label>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.comentarios" rows="4"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Guardar</button>
+        </div>
+        </form>
+              </div>
+              </div>
+              <div class="flex justify-center mt-16">
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
+  <TransitionRoot appear :show="isOpenequivocado" as="template">
+    <Dialog as="div" @close="closeModalequivocado" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black/25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-[50%] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h3"
+                class="text-2xl font-bold text-blue-500"
+              >
+                Reprogramar llamada
+              </DialogTitle>
+              <div class="mt-2">
+              <div class="flex flex-col">
+                <form @submit.prevent="submitGestion('equivocado')">
+                <div class="mb-4">
+            <label for="nombre_cliente" class="block text-gray-700 text-sm font-bold mb-2">Nombre del cliente</label>
+            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.nombre_cliente" readonly required>
+        </div>
+
+        <div class="mb-4">
+            <label for="fecha_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Fecha llamada</label>
+            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.fecha" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="comentarios_adicionales" class="block text-gray-700 text-sm font-bold mb-2">Comentarios adicionales</label>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.comentarios" rows="4"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Guardar</button>
+        </div>
+        </form>
+              </div>
+              </div>
+              <div class="flex justify-center mt-16">
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
+  <TransitionRoot appear :show="isOpenotro" as="template">
+    <Dialog as="div" @close="closeModalotro" class="relative z-10">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-black/25" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 overflow-y-auto">
+        <div
+          class="flex min-h-full items-center justify-center p-4 text-center"
+        >
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full max-w-[50%] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            >
+              <DialogTitle
+                as="h3"
+                class="text-2xl font-bold text-blue-500"
+              >
+                Reprogramar llamada
+              </DialogTitle>
+              <div class="mt-2">
+              <div class="flex flex-col">
+                <form @submit.prevent="submitGestion('otro')">
+                <div class="mb-4">
+            <label for="nombre_cliente" class="block text-gray-700 text-sm font-bold mb-2">Nombre del cliente</label>
+            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.nombre_cliente" readonly required>
+        </div>
+
+        <div class="mb-4">
+            <label for="fecha_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Fecha llamada</label>
+            <input type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.fecha" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="comentarios_adicionales" class="block text-gray-700 text-sm font-bold mb-2">Comentarios adicionales</label>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.comentarios" rows="4"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Guardar</button>
+        </div>
+        </form>
+              </div>
+              </div>
+              <div class="flex justify-center mt-16">
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>  
+
   <TransitionRoot appear :show="isOpenaveriado" as="template">
     <Dialog as="div" @close="closeModalAveriado" class="relative z-10">
       <TransitionChild
@@ -689,19 +957,21 @@ function closeModalRechazo() {
               </DialogTitle>
               <div class="mt-2">
               <div class="flex flex-col">
+                <form @submit.prevent="submitAveriado()">
                 <div class="mb-4">
             <label for="nombre_cliente" class="block text-gray-700 text-sm font-bold mb-2">Nombre del cliente</label>
-            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="nombre_cliente" name="nombre_cliente" required>
+            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="nombre_cliente" name="nombre_cliente" v-model="gestiones.nombre_cliente" readonly>
         </div>
 
         <div class="mb-4">
             <label for="comentarios_adicionales" class="block text-gray-700 text-sm font-bold mb-2">Comentarios adicionales</label>
-            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="comentarios_adicionales" name="comentarios_adicionales" rows="4"></textarea>
+            <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="comentarios_adicionales" name="comentarios_adicionales"  v-model="gestiones.comentarios" rows="4"></textarea>
         </div>
 
         <div class="flex items-center justify-between">
             <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Guardar</button>
         </div>
+      </form>
               </div>
               </div>
               <div class="flex justify-center mt-16">

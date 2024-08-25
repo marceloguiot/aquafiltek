@@ -317,6 +317,49 @@ class GestionController extends Controller
         
     }
 
+    public function averiado(Request $request){
+        $user = Auth::user();
+        $request->request->add(['id_cliente' => 123123123]);
+        $request->request->add(['fecha_gestion' => date("Y-m-d h:i:s")]);
+        $request->request->add(['fecha' => date("Y-m-d")]);
+        $request->request->add(['hora' => date("h:i:s")]);
+        $request->request->add(['id_operador' => $user->id]);
+        try{
+        Gestion::create($request->all());
+
+       
+
+        //comentarios
+        $comentario = [];
+        $comentario['comentario'] = $request->comentarios;
+        $comentario['fecha'] = $request->fecha;
+        $comentario['hora'] = $request->hora;
+        $comentario['estado'] = $request->tipo;
+        $comentario['id_cliente'] =  $request->codigo;
+        $comentario['id_operador'] = $user->id;
+        $comentario['fecha_gestion'] = date("Y-m-d");
+        $comentario['hora_gestion'] = date("h:i:s");
+        Comentarios::create($comentario);
+
+         // Actualizar el estado del cliente
+         $cliente = Cliente::where('codigo', $request->codigo)->first();
+         if ($cliente) {
+             $cliente->estado = $request->tipo;
+             $cliente->save();
+         }
+
+
+
+
+        return $request;
+        }
+        catch(Error $e){
+           
+        return 'error'.$e;
+        }
+        
+    }
+
     public function getLlamadas(){
         // Get today's date
         $today = Carbon::today();
@@ -383,6 +426,24 @@ class GestionController extends Controller
 
 // Devolver los datos en formato JSON
 return response()->json($gestiones);
+    }
+
+    public function getReportNoGest(Request $request)
+    {
+        $fechaLimite = Carbon::now()->subMonths(6);
+
+        // Formato de fecha esperado en la base de datos
+        $formatoFecha = 'd/m/Y H:i:s';
+    
+        // Convertir la fecha límite al formato esperado
+        $fechaLimiteFormateada = $fechaLimite->format($formatoFecha);
+    
+        // Buscar los registros en la tabla clientes donde fecha_gestion sea mayor a seis meses
+        $clientesAntiguos = DB::table('clientes')
+            ->where('fecha_gestion', '<', $fechaLimiteFormateada)
+            ->get();
+    
+        return response()->json($clientesAntiguos);
     }
 
     public function actualizarPrecio(Request $request)

@@ -60,6 +60,7 @@ Route::get('/gestiones-diarias', [UserController::class, 'getDailyGestiones']);
 Route::post('/cliente',[ClienteController::class, 'store'])->middleware(['auth', 'verified']);
 Route::post('/gestion_acepto',[GestionController::class, 'acepto'])->middleware(['auth', 'verified']);
 Route::post('/gestion',[GestionController::class, 'otras'])->middleware(['auth', 'verified']);
+Route::post('/gestion-averiado',[GestionController::class, 'averiado'])->middleware(['auth', 'verified']);
 Route::post('/getDataClient',[ClienteController::class, 'getData'])->middleware(['auth', 'verified'])->name('getDataClient');
 Route::post('/getComentarios',[ClienteController::class, 'getComentarios'])->middleware(['auth', 'verified'])->name('getComentarios');
 Route::post('/getLlamadas',[GestionController::class, 'getLlamadas'])->middleware(['auth', 'verified'])->name('getLlamadas');
@@ -68,6 +69,7 @@ Route::post('/edprecio',[GestionController::class, 'actualizarPrecio'])->middlew
 Route::post('/cliente_actualizar',[ClienteController::class, 'actualizar'])->middleware(['auth', 'verified'])->name('cliente_actualizar');
 Route::post('/getClientSearch', [ClienteController::class, 'getDataClient'])->middleware(['auth', 'verified'])->name('getClientSearch');
 Route::post('/getReport', [GestionController::class, 'getReport'])->middleware(['auth', 'verified'])->name('getReport');
+Route::post('/getReportNoGest', [GestionController::class, 'getReportNoGest'])->middleware(['auth', 'verified'])->name('getReportNoGest');
 Route::post('/getFilteredData', [GestionController::class, 'getFilteredData'])->middleware(['auth', 'verified'])->name('getFilteredData');
 Route::post('/postventa', [GestionController::class, 'storePostventa'])->middleware(['auth', 'verified']);
 Route::post('/api/getGestiones', [GestionController::class, 'getGestiones'])->middleware(['auth', 'verified']);
@@ -83,6 +85,7 @@ Route::post('/cliente/desarchivar', [ClienteController::class, 'desarchivarClien
 Route::post('/cliente/reactivar', [ClienteController::class, 'activarCliente'])->middleware(['auth', 'verified'])->name('cliente.reactivar');
 Route::post('/guardar-escalas', [UserController::class, 'guardarEscalas'])->middleware(['auth', 'verified'])->name('guardar.escalas');
 Route::post('/tira-informativa', [UserController::class, 'guardarTira'])->middleware(['auth', 'verified'])->name('guardar.tira');
+Route::post('/guardar-descanso', [UserController::class, 'guardarDescanso'])->middleware(['auth', 'verified'])->name('guardar.descanso');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

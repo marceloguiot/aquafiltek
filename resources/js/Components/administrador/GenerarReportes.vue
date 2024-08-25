@@ -19,6 +19,7 @@
         <div class="mb-4">
           <label for="operador" class="block text-gray-700">Seleccionar operador</label>
           <select v-model="historialUsuario.operador" class="mt-1 block w-full border rounded px-3 py-2" required>
+            <option value="null">--SELECCIONE--</option>
             <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
           </select>
         </div>
@@ -26,6 +27,7 @@
         <div class="mb-4">
           <label for="ordenarPor" class="block text-gray-700">Ordenar por</label>
           <select v-model="historialUsuario.ordenarPor" class="mt-1 block w-full border rounded px-3 py-2" required>
+            <option value="null">--SELECCIONE--</option>
             <option value="cliente">Cliente</option>
             <option value="resultado_gestion">Resultado de gestión</option>
             <option value="duracion_gestion">Duración de gestión</option>
@@ -94,21 +96,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
-const users = ref([
-  { id: 1, name: 'Operador 1' },
-  { id: 2, name: 'Operador 2' },
-  // Agrega más usuarios según sea necesario
-]);
+const users = ref([]);
+const reportData = ref([]);
 
 const historialUsuario = ref({
   fechaInicio: '',
   fechaFin: '',
-  operador: '',
-  ordenarPor: '',
+  operador: 'null',
+  ordenarPor: 'null',
   formato: 'pdf',
 });
+
+const columns = [
+  { title: 'Código', data: 'codigo' },
+  { title: 'Cliente', data: 'nombre_cliente' },
+  { title: 'Fecha Acepto', data: 'fecha_acepto' },
+  { title: 'Hora Acepto', data: 'hora_acepto' },
+  { title: 'Precio', data: 'precio' },
+  { title: 'Comentarios', data: 'comentarios' },
+  { title: 'Fecha Gestión', data: 'fecha_gestion' },
+  { title: 'Operador', data: 'nombre_operador' },
+];
 
 const reporteEjecucion = ref({
   fechaInicio: '',
@@ -126,10 +140,63 @@ const generarReporteHistorialUsuario = () => {
   console.log('Generando reporte historial usuario:', historialUsuario.value);
 };
 
-const generarReporteEjecucion = () => {
-  // Aquí se puede hacer la lógica para generar el reporte de ejecución del servicio
-  console.log('Generando reporte de ejecución del servicio:', reporteEjecucion.value);
+const generarReporteEjecucion = async () => {
+  try {
+    const response = await axios.post('/getReport', {
+      start_date: reporteEjecucion.value.fechaInicio,
+      end_date: reporteEjecucion.value.fechaFin,
+    });
+    reportData.value = await response.data.registros;
+    if(reporteEjecucion.value.formato == 'pdf')
+    {
+      const doc = new jsPDF();
+  doc.autoTable({
+    head: [columns.map(col => col.title)],
+    body: reportData.value.map(row => columns.map(col => row[col.data])),
+  });
+  doc.save('reporte.pdf');
+    }
+    else
+    {
+      const worksheet = XLSX.utils.json_to_sheet(reportData.value);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+  XLSX.writeFile(workbook, 'reporte.xlsx');
+    }
+  } catch (error) {
+    console.error('Error generating report:', error);
+  }
 };
+
+const generarClientesNoGestionados = async () => {
+  const response = await axios.post('/getReportNoGest', {
+      start_date: reporteEjecucion.value.fechaInicio,
+      end_date: reporteEjecucion.value.fechaFin,
+    });
+
+    if(reporteEjecucion.value.formato == 'pdf')
+    {
+      const doc = new jsPDF();
+  doc.autoTable({
+    head: [columns.map(col => col.title)],
+    body: response.data.map(row => columns.map(col => row[col.data])),
+  });
+  doc.save('reporte.pdf');
+    }
+    else
+    {
+      const worksheet = XLSX.utils.json_to_sheet(response.data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+  XLSX.writeFile(workbook, 'reporte.xlsx');
+    }
+  
+}
+
+onMounted(async () => {
+  const response = await axios.get('/users');
+  users.value = response.data;
+});
 </script>
 
 <style scoped>

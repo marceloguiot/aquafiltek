@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Auth;
 use App\Models\Permiso;
+use App\Models\Descanso;
 use App\Models\UserEscala;
 use App\Models\TiraInformativa;
 use Illuminate\Support\Facades\DB;
@@ -113,6 +114,28 @@ public function getDailyGestiones()
         'gestionesInactivosCount' => $gestionesInactivosCount,
         'totalGestiones' => $totalGestiones,
     ]);
+}
+
+public function guardarDescanso(Request $request){
+    try{
+        $usuarioActual = Auth::user();
+
+        $id_user = $usuarioActual->id;
+        $hoy = Carbon::today();
+    
+        $descanso = new Descanso();
+        $descanso->id_user = $id_user;
+        $descanso->fecha = $hoy;
+        $descanso->tiempo = $request->tiempo;
+        $descanso->tipo = 'Descanso';
+        $descanso->save();
+    
+        return response()->json(['message' => 'exito'], 200);
+    }
+    catch(Exception $e){
+        return response()->json(['message' => 'error']);
+    }
+   
 }
     
 }
