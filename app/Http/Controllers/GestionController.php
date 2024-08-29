@@ -418,14 +418,29 @@ class GestionController extends Controller
 
     public function getFilteredGestiones(Request $request)
     {
-            // Filtrar los registros por el campo 'codigo' y seleccionar los campos requeridos, incluyendo nombre_cliente de la tabla clientes
-    $gestiones = GestionAceptada::join('clientes', 'gestiones_aceptadas.codigo', '=', 'clientes.codigo')
+// Obtener registros de gestiones_aceptadas
+$gestionesAceptadas = GestionAceptada::join('clientes', 'gestiones_aceptadas.codigo', '=', 'clientes.codigo')
     ->where('gestiones_aceptadas.codigo', $request->id)
     ->select('gestiones_aceptadas.fecha_acepto', 'gestiones_aceptadas.hora_acepto', 'gestiones_aceptadas.precio', 'gestiones_aceptadas.id', 'gestiones_aceptadas.codigo', 'clientes.nombre_cliente')
     ->get();
 
+// Obtener registros de gestiones donde tipo es 'competencia'
+$gestionesCompetencia = Gestion::where('tipo', 'competencia')
+    ->where('codigo', $request->id)
+    ->select('fecha', 'hora', 'id', 'codigo', 'tipo')
+    ->get();
+
+// Combinar ambos resultados en una colección
+$gestiones = $gestionesAceptadas->merge($gestionesCompetencia);
+
+// Retornar los resultados combinados
+return $gestiones;
+
+        
+
 // Devolver los datos en formato JSON
 return response()->json($gestiones);
+
     }
 
     public function getReportNoGest(Request $request)

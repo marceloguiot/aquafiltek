@@ -72,7 +72,13 @@ const submitPrecio = async () =>{
                         <td class="text-white border">
                             <div class="flex flex-col">
                                 <div v-for="element in props.ventas" class="text-sm">
+                                  <div v-if="element.tipo == 'competencia'">
+                                    <span class="text-red-400 font-semibold">{{ element.fecha }}</span>
+                                  </div>
+                                  <div v-else>
                                     {{ element.fecha_acepto }} - ${{ element.precio }} <span class="hover:cursor-pointer text-blue-400" @click="editar_precio(element)">editar</span>
+                          
+                                  </div> 
                                 </div>
 
                             </div>

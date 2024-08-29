@@ -135,6 +135,7 @@ const fetchPasadas = async () => {
         'Content-Type': 'application/json'
       }
     });
+    console.log(response.data);
     gestionesPast.value = response.data;
   } catch (err) {
     console.error(err);
