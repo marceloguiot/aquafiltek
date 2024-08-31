@@ -12,6 +12,7 @@ import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import { defineEmits } from 'vue';
 import Swal from 'sweetalert2';
+import HorasDisp from './HorasDisp.vue';
 
 const isOpenacepto = ref(false);
 const isOpeninspeccion = ref(false);
@@ -228,6 +229,10 @@ function openRechazo() {
 function closeModalRechazo() {
   isOpenrechazo.value = false;
 }
+
+const actualizarHora = (horaSeleccionada) => {
+  gestiones.value.hora = horaSeleccionada;
+};
 </script>
 <template>
                 <div class="flex flex-row justify-evenly mt-5 mb-10">
@@ -297,6 +302,7 @@ function closeModalRechazo() {
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora de ejecución del servicio</label>
             <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="acepto.hora_acepto" min="06:00" max="19:00" required>
+
         </div>
 
         <div class="mb-4">
@@ -377,7 +383,7 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora de ejecución del servicio</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required readonly>
         </div>
 
         <div class="mb-4">
@@ -525,7 +531,8 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required readonly>
+            <HorasDisp :fecha="gestiones.fecha"  @horaSeleccionada="actualizarHora" />
         </div>
 
         <div class="mb-4">
@@ -600,8 +607,9 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
-        </div>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required readonly>
+            <HorasDisp :fecha="gestiones.fecha"  @horaSeleccionada="actualizarHora" />
+          </div>
 
         <div class="mb-4">
             <label for="comentarios_adicionales" class="block text-gray-700 text-sm font-bold mb-2">Comentarios adicionales</label>
@@ -748,8 +756,9 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
-        </div>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required readonly>
+            <HorasDisp :fecha="gestiones.fecha"  @horaSeleccionada="actualizarHora" />
+          </div>
 
         <div class="mb-4">
             <label for="comentarios_adicionales" class="block text-gray-700 text-sm font-bold mb-2">Comentarios adicionales</label>
@@ -822,8 +831,9 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
-        </div>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required readonly>
+            <HorasDisp :fecha="gestiones.fecha"  @horaSeleccionada="actualizarHora" />
+          </div>
 
         <div class="mb-4">
             <label for="comentarios_adicionales" class="block text-gray-700 text-sm font-bold mb-2">Comentarios adicionales</label>
@@ -896,8 +906,9 @@ function closeModalRechazo() {
 
         <div class="mb-4">
             <label for="hora_ejecucion" class="block text-gray-700 text-sm font-bold mb-2">Hora llamada</label>
-            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required>
-        </div>
+            <input type="time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" v-model="gestiones.hora" min="06:00" max="19:00" required readonly>
+            <HorasDisp :fecha="gestiones.fecha"  @horaSeleccionada="actualizarHora" />
+          </div>
 
         <div class="mb-4">
             <label for="comentarios_adicionales" class="block text-gray-700 text-sm font-bold mb-2">Comentarios adicionales</label>

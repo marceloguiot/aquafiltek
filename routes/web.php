@@ -51,6 +51,7 @@ Route::get('/api/new-clients', [ClienteController::class, 'getNewClients']);
 Route::get('/permisos', [UserController::class, 'fetchPermisos'])->middleware(['auth', 'verified'])->name('permisos');
 Route::get('/tira-informativa', [UserController::class, 'getTiraInformativa'])->middleware(['auth', 'verified'])->name('getTira');
 Route::get('/gestiones-diarias', [UserController::class, 'getDailyGestiones']);
+Route::get('/llamadas-programadas', [GestionController::class, 'getScheduledCalls']);
 
 
 

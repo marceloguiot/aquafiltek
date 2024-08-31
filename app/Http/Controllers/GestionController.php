@@ -783,6 +783,26 @@ public function editarAcepto(Request $request)
     }
 }
 
+public function getScheduledCalls(Request $request)
+{
+    // Validar que la fecha fue proporcionada
+    $request->validate([
+        'fecha' => 'required|date'
+    ]);
+
+    // Obtener la fecha desde la solicitud
+    $fecha = $request->input('fecha');
+
+    // Consultar las horas ocupadas entre '08:00:00' y '19:00:00' para la fecha especificada
+    $horasOcupadas = DB::table('llamadas_programadas')
+        ->whereDate('fecha_llamada', $fecha)
+        ->whereBetween('hora_llamada', ['08:00:00', '19:00:00'])
+        ->pluck('hora_llamada'); // Seleccionar solo las horas
+
+    // Retornar las horas ocupadas como una respuesta JSON
+    return response()->json($horasOcupadas);
+}
+
 
 
 
