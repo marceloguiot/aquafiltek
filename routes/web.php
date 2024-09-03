@@ -30,10 +30,11 @@ Route::get('/recordatorios', function () { return Inertia::render('Recordatorios
 Route::get('/gestionar', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('gestionar');
 Route::get('/postventa', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('postventa');
 Route::get('/reportes', function () { return Inertia::render('Reportes');})->middleware(['auth', 'verified'])->name('reportes');
+
 Route::get('/busqueda', function () { return Inertia::render('Filtros');})->middleware(['auth', 'verified'])->name('busqueda');
 Route::get('/calendario', function () { return Inertia::render('VistaCalendario');})->middleware(['auth', 'verified'])->name('calendario');
 Route::get('/mapa', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('mapa');
-Route::get('/gestion_calendario', function () { return Inertia::render('VistaCalendario');})->middleware(['auth', 'verified'])->name('gestion_calendario');
+Route::get('/gestion_calendario', function () { return Inertia::render('GestionCalendario');})->middleware(['auth', 'verified'])->name('gestion_calendario');
 Route::get('/llamadas/upcoming', [GestionController::class, 'getUpcomingLlamadas'])->name('llamadas.upcoming');
 Route::get('/proximas_gestiones', [GestionController::class, 'getProximasGestiones'])->middleware('auth')->name('proximas_gestiones');
 Route::get('/previas_gestiones', [GestionController::class, 'getUltimasGestiones'])->middleware('auth')->name('previas_gestiones');

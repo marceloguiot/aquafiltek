@@ -50,7 +50,7 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('busqueda')" :active="route().current('busqueda')">
                                     Búsqueda por filtros
                                 </NavLink>
-                                <NavLink :href="route('calendario')" :active="route().current('calendario')">
+                                <NavLink :href="route('gestion_calendario')" :active="route().current('gestion_calendario')">
                                     Gestión por calendario
                                 </NavLink>
                                 <NavLink :href="route('mapa')" :active="route().current('mapa')">

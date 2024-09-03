@@ -17,7 +17,7 @@ const emit = defineEmits(['clienteSeleccionado']);
 
 
 const redirectToGestionCalendario = () => {
-  router.visit(route('gestion_calendario'));
+  router.visit(route('calendario'));
 }
 
 

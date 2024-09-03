@@ -150,31 +150,195 @@ const submitAveriado = async () => {
 
 
 
+//abrir modales
 
 function openAcepto() {
+
+  if(!acepto.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
   isOpenacepto.value = true;
 }
+  
+}
+
+
+function openInspeccion() {
+  if(!gestiones.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
+  isOpeninspeccion.value = true;
+}
+}
+function openCobros() {
+  if(!gestiones.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
+  isOpencobros.value = true;
+}
+}
+function openImportante() {
+  if(!gestiones.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
+  isOpenimportante.value = true;
+}
+}
+function openVolver() {
+  if(!gestiones.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
+  isOpenvolver.value = true;
+}
+}
+function openNoresponde() {
+  if(!gestiones.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
+  isOpennoresponde.value = true;
+}
+}
+
+function openEquivocado() {
+  if(!gestiones.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
+  isOpenequivocado.value = true;
+}
+}
+
+function openOtro() {
+  if(!gestiones.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
+  isOpenotro.value = true;
+}
+}
+function openAveriado() {
+  if(!gestiones.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
+  isOpenaveriado.value = true;
+}
+}
+function openCompetencia() {
+  if(!gestiones.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
+  isOpencompetencia.value = true;
+}
+}
+function openRechazo() {
+  if(!gestiones.value.codigo)
+{
+  
+      Swal.fire({
+      title: "¡Error!",
+      text: "No hay un cliente actual.",
+      confirmButtonText: "Aceptar",
+      icon: "error"
+    });
+}
+else{
+  isOpenrechazo.value = true;
+}
+}
+
+
+//cerrar modales
+
 function closeModalAcepto() {
   isOpenacepto.value = false;
 }
 
-function openInspeccion() {
-  isOpeninspeccion.value = true;
-}
 function closeModalInspeccion() {
   isOpeninspeccion.value = false;
 }
 
-function openCobros() {
-  isOpencobros.value = true;
-}
 function closeModalCobros() {
   isOpencobros.value = false;
 }
 
-function openImportante() {
-  isOpenimportante.value = true;
-}
 function closeModalImportante() {
   isOpenimportante.value = false;
 }
@@ -189,43 +353,18 @@ function closeModalotro() {
   isOpenotro.value = false;
 }
 
-function openVolver() {
-  isOpenvolver.value = true;
-}
-
-function openNoresponde() {
-  isOpennoresponde.value = true;
-}
-
-function openEquivocado() {
-  isOpenequivocado.value = true;
-}
-
-function openOtro() {
-  isOpenotro.value = true;
-}
-
 function closeModalVolver() {
   isOpenvolver.value = false;
 }
 
-function openAveriado() {
-  isOpenaveriado.value = true;
-}
 function closeModalAveriado() {
   isOpenaveriado.value = false;
 }
 
-function openCompetencia() {
-  isOpencompetencia.value = true;
-}
 function closeModalCompetencia() {
   isOpencompetencia.value = false;
 }
 
-function openRechazo() {
-  isOpenrechazo.value = true;
-}
 function closeModalRechazo() {
   isOpenrechazo.value = false;
 }
