@@ -39,7 +39,7 @@ const upcomingLlamadas = ref([]);
 const permiso_editar = ref(0);
 const permiso_inactivar = ref(0);
 const motivo = ref("");
-const handleClienteSeleccionado = async (cliente) => {
+const handleClienteSeleccionado = async (cliente, index, tipo) => {
   actual.value = await cliente;
   fetchComentarios();
 };
@@ -135,7 +135,6 @@ const fetchPasadas = async () => {
         'Content-Type': 'application/json'
       }
     });
-    console.log(response.data);
     gestionesPast.value = response.data;
   } catch (err) {
     console.error(err);
@@ -158,7 +157,6 @@ const fetchGestiones = async () => {
 const fetchPermisos = async () => {
   try {
         const response = await axios.get('/permisos');
-        console.log(response.data.editar);
         permiso_editar.value = response.data.editar;
         permiso_inactivar.value = response.data.inactivar;
     } catch (error) {
@@ -236,10 +234,10 @@ const registrar_inactivo = async (id_cliente) => {
                     <!-- Terminan modales-->
                 <div class="flex flex-row justify-center mt-5">                
                   <div class="flex flex-row">
-                    <div v-for="dat in datos">
-                      <div class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat)">{{ dat.direccion }}</div>
-                      <div class="h-20 text-sm bg-yellow-400 text-center content-center border p-1 hover:cursor-pointer" @click="handleClienteSeleccionado(dat)">{{ dat.nombre_cliente}}</div>
-                      <div class="h-12 text-sm bg-yellow-400 text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat)">{{ dat.tipo }}</div>
+                    <div v-for="(dat, index) in datos">
+                      <div class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'pasado')">{{ dat.direccion }}</div>
+                      <div class="h-20 text-sm bg-yellow-400 text-center content-center border p-1 hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'pasado')">{{ dat.nombre_cliente}}</div>
+                      <div class="h-12 text-sm bg-yellow-400 text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'pasado')">{{ dat.tipo }}</div>
                     </div>
                     <div>
                       <div class="h-16 text-xs bg-teal-400 overflow-auto text-center content-center border">{{ actual.direccion }}</div>
@@ -247,10 +245,10 @@ const registrar_inactivo = async (id_cliente) => {
                       <div class="h-12 text-sm bg-teal-400 text-center content-center border">{{ actual.tipo }}</div>
                     </div>
                     
-                    <div v-for="dat in datos_prox">
-                      <div class="h-16 text-xs bg-orange-400 overflow-auto text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat)">{{ dat.direccion }}</div>
-                      <div class="h-20 text-sm bg-orange-400 text-center content-center border p-1 hover:cursor-pointer" @click="handleClienteSeleccionado(dat)">{{ dat.nombre_cliente}}</div>
-                      <div class="h-12 text-sm bg-orange-400 text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat)">{{ dat.tipo }}</div>
+                    <div v-for="(dat, index) in datos_prox">
+                      <div class="h-16 text-xs bg-orange-400 overflow-auto text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.direccion }}</div>
+                      <div class="h-20 text-sm bg-orange-400 text-center content-center border p-1 hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.nombre_cliente}}</div>
+                      <div class="h-12 text-sm bg-orange-400 text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.tipo }}</div>
                     </div>
                   </div>
                 </div>

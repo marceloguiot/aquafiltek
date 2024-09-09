@@ -31,16 +31,23 @@ class GestionController extends Controller
         $fecha_inicio = $hoy;
         $fecha_fin = $hoy->copy()->addDays(7);
 
-        // Subconsulta para obtener los códigos de cliente que están en la tabla operador_cliente
         $excluirCodigos = OperadorCliente::pluck('codigo_cliente');
 
         // Obtener las gestiones próximas cuyo código no está en la tabla operador_cliente
-        $gestiones = Gestion::whereBetween('fecha', [$fecha_inicio, $fecha_fin])
-                            ->whereNotIn('codigo', $excluirCodigos)
-                            ->leftJoin('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
-                            ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
-                            ->take(3)
-                            ->get();
+        $gestiones = Gestion::whereNotIn('codigo', $excluirCodigos)
+            ->leftJoin('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
+            ->select(
+                'clientes.codigo',
+                'clientes.nombre_cliente',
+                'clientes.direccion',
+                'clientes.telefono',
+                DB::raw('MAX(gestiones.id) as gestion_id'), // Selecciona el ID máximo de gestión por cliente
+                DB::raw('MAX(gestiones.fecha) as gestion_fecha') // Selecciona la fecha máxima de gestión por cliente
+            )
+            ->groupBy('clientes.codigo', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
+            ->take(3)
+            ->get();
+        
 
         if ($gestiones->isEmpty()) {
             $clientes = Cliente::where('estado', 'Por gestionar')
