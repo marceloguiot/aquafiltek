@@ -34,7 +34,7 @@ Route::get('/clientes-por-gestionar', [GestionController::class, 'getClientesPor
 
 Route::get('/busqueda', function () { return Inertia::render('Filtros');})->middleware(['auth', 'verified'])->name('busqueda');
 Route::get('/calendario', function () { return Inertia::render('VistaCalendario');})->middleware(['auth', 'verified'])->name('calendario');
-Route::get('/mapa', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('mapa');
+Route::get('/mapa', function () { return Inertia::render('GestionMapa');})->middleware(['auth', 'verified'])->name('mapa');
 Route::get('/gestion_calendario', function () { return Inertia::render('GestionCalendario');})->middleware(['auth', 'verified'])->name('gestion_calendario');
 Route::get('/llamadas/upcoming', [GestionController::class, 'getUpcomingLlamadas'])->name('llamadas.upcoming');
 Route::get('/proximas_gestiones', [GestionController::class, 'getProximasGestiones'])->middleware('auth')->name('proximas_gestiones');
