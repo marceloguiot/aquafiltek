@@ -85,7 +85,7 @@ const handleUpdateEjecutado = (ejecutado) => {
     }).then((result) => {
   /* Read more about isConfirmed, isDenied below */
   if (result.isConfirmed) {
-    fetchGestiones();
+    location.reload();
   }
 });
   //

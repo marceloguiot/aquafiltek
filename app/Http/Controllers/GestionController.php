@@ -33,21 +33,24 @@ class GestionController extends Controller
 
         $excluirCodigos = OperadorCliente::pluck('codigo_cliente');
 
-        // Obtener las gestiones próximas cuyo código no está en la tabla operador_cliente
-        $gestiones = Gestion::whereNotIn('codigo', $excluirCodigos)
-            ->leftJoin('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
-            ->select(
-                'clientes.codigo',
-                'clientes.nombre_cliente',
-                'clientes.direccion',
-                'clientes.telefono',
-                DB::raw('MAX(gestiones.id) as gestion_id'), // Selecciona el ID máximo de gestión por cliente
-                DB::raw('MAX(gestiones.fecha) as gestion_fecha') // Selecciona la fecha máxima de gestión por cliente
-            )
-            ->groupBy('clientes.codigo', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
-            ->take(3)
-            ->get();
-        
+// Obtener la fecha de hace 6 meses
+$sixMonthsAgo = Carbon::now()->subMonths(6)->format('d/m/Y H:i:s');
+
+// Obtener las gestiones próximas cuyo código no está en la tabla operador_cliente
+$gestiones = Gestion::whereNotIn('codigo', $excluirCodigos)
+    ->leftJoin('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
+    ->whereRaw('clientes.nombre_cliente NOT REGEXP \'^[0-9]+$\'') // Excluir registros donde nombre_cliente es un número
+    ->where('clientes.inactivo', 0) // Filtrar por clientes inactivos
+    ->whereRaw("STR_TO_DATE(clientes.fecha_gestion, '%d/%m/%Y %H:%i:%s') >= STR_TO_DATE(?, '%d/%m/%Y %H:%i:%s')", [$sixMonthsAgo]) // Comparar la fecha de gestión
+    ->select(
+        'clientes.codigo',
+        'clientes.nombre_cliente',
+        'clientes.direccion',
+        'clientes.telefono'
+    )
+    ->groupBy('clientes.codigo', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
+    ->take(3)
+    ->get();
 
         if ($gestiones->isEmpty()) {
             $clientes = Cliente::where('estado', 'Por gestionar')
@@ -135,13 +138,24 @@ class GestionController extends Controller
        // Subconsulta para obtener los códigos de cliente que están en la tabla operador_cliente
        $excluirCodigos = OperadorCliente::pluck('codigo_cliente');
 
-       // Obtener las gestiones próximas cuyo código no está en la tabla operador_cliente
-       $gestiones = Gestion::whereBetween('fecha', [$fecha_inicio, $fecha_fin])
-                           ->whereNotIn('codigo', $excluirCodigos)
-                           ->leftJoin('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
-                           ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
-                           ->take(3)
-                           ->get();
+       // Obtener la fecha de hace 6 meses
+$sixMonthsAgo = Carbon::now()->subMonths(6)->format('d/m/Y H:i:s');
+
+// Obtener las gestiones próximas cuyo código no está en la tabla operador_cliente
+$gestiones = Gestion::whereNotIn('codigo', $excluirCodigos)
+    ->leftJoin('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
+    ->whereRaw('clientes.nombre_cliente NOT REGEXP \'^[0-9]+$\'') // Excluir registros donde nombre_cliente es un número
+    ->where('clientes.inactivo', 0) // Filtrar por clientes inactivos
+    ->whereRaw("STR_TO_DATE(clientes.fecha_gestion, '%d/%m/%Y %H:%i:%s') >= STR_TO_DATE(?, '%d/%m/%Y %H:%i:%s')", [$sixMonthsAgo]) // Comparar la fecha de gestión
+    ->select(
+        'clientes.codigo',
+        'clientes.nombre_cliente',
+        'clientes.direccion',
+        'clientes.telefono'
+    )
+    ->groupBy('clientes.codigo', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
+    ->take(3)
+    ->get();
 
        if ($gestiones->isEmpty()) {
            $clientes = Cliente::where('estado', 'Por gestionar')
