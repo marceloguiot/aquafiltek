@@ -811,6 +811,12 @@ public function getScheduledCalls(Request $request)
 }
 
 
+public function getClientesPorGestionar()
+{
+    // Obtener todos los registros de clientes cuyo estado sea 'Por gestionar'
+    $clientes = Cliente::where('estado', 'Por gestionar')->get();
 
+    return response()->json($clientes);
+}
 
 }

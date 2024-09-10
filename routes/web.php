@@ -27,9 +27,10 @@ Route::get('/gestiones', [GestionController::class, 'getClients'])->middleware([
 
 Route::get('/motivate', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('motivate');
 Route::get('/recordatorios', function () { return Inertia::render('Recordatorios');})->middleware(['auth', 'verified'])->name('recordatorios');
-Route::get('/gestionar', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('gestionar');
+Route::get('/gestionar', function () { return Inertia::render('PorGestionar');})->middleware(['auth', 'verified'])->name('gestionar');
 Route::get('/postventa', function () { return Inertia::render('Motivacion');})->middleware(['auth', 'verified'])->name('postventa');
 Route::get('/reportes', function () { return Inertia::render('Reportes');})->middleware(['auth', 'verified'])->name('reportes');
+Route::get('/clientes-por-gestionar', [GestionController::class, 'getClientesPorGestionar']);
 
 Route::get('/busqueda', function () { return Inertia::render('Filtros');})->middleware(['auth', 'verified'])->name('busqueda');
 Route::get('/calendario', function () { return Inertia::render('VistaCalendario');})->middleware(['auth', 'verified'])->name('calendario');
