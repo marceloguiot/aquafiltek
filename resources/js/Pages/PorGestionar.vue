@@ -42,6 +42,7 @@
   import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
   import { Head } from '@inertiajs/vue3';
   import ModalGestion from '@/Components/ModalGestion.vue';
+  import Swal from 'sweetalert2';
   
   // Definir estados reactivamente
   const clientes = ref([]);
@@ -59,7 +60,24 @@
       loading.value = false;
     }
   };
-  
+  const handleUpdateEjecutado = (ejecutado) => {
+  if(ejecutado == 'true')
+{
+  Swal.fire({
+      title: "¡gestion guardada!",
+      text: "La gestión se guardo correctamente.",
+      confirmButtonText: "Aceptar",
+      icon: "success"
+    }).then((result) => {
+  /* Read more about isConfirmed, isDenied below */
+  if (result.isConfirmed) {
+    fetchClientesPorGestionar();
+  }
+});
+  //
+}
+};
+
   const seleccionar = (cliente) =>{
     actual.value = cliente;
   }
