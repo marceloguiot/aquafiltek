@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount, onMounted } from 'vue'
+import { ref, onBeforeMount, onMounted, nextTick } from 'vue'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
@@ -24,12 +24,14 @@ const isOpenLlamada = ref(false);
 const isOpenInac = ref(false);
 const mensajes = ref([]);
 
-const datos = ref(props.datos.previas.original);
+const datos = ref([]);
 
-const datos_prox = ref(props.datos.proximas.original);
+const datos_prox = ref([]);
 
 
-const actual = ref(props.datos.actual);
+const actual = ref([]);
+const visibleDatos = ref([]);
+
 
 
 
@@ -39,10 +41,41 @@ const upcomingLlamadas = ref([]);
 const permiso_editar = ref(0);
 const permiso_inactivar = ref(0);
 const motivo = ref("");
-const handleClienteSeleccionado = async (cliente, index, tipo) => {
-  actual.value = await cliente;
-  fetchComentarios();
+
+
+const fetchRecentGestiones = async () => {
+  try {
+    const response = await axios.get('/gestiones/recent', {
+      params: {
+        id_operador: 1, // Enviar el ID del operador como parámetro
+      },
+    });
+    // Actualizar los datos después de recibir la respuesta
+    datos.value = response.data;
+    actualizarVisibleDatos(); // Actualizar los elementos visibles
+  } catch (error) {
+    console.error('Error al obtener los registros:', error);
+  }
 };
+
+// Función para actualizar los elementos visibles
+const actualizarVisibleDatos = () => {
+  visibleDatos.value = datos.value.slice(0, 3); // Muestra solo los primeros 3 elementos
+};
+
+
+const handleClienteSeleccionado = async (cliente, index, tipo) => {
+  actual.value = cliente;
+  fetchComentarios(); // Asume que esta función no es asíncrona; si lo es, añade 'await'
+  visibleDatos.value = [];
+  // Espera a que se obtengan los registros recientes
+  await fetchRecentGestiones();
+  // Filtra los datos después de actualizar
+  datos.value = datos.value.filter((item) => item.codigo !== cliente.codigo);
+  actualizarVisibleDatos(); // Actualiza los elementos visibles
+};
+
+
 const gestiones = ref(null);
 const fetchGestionesDiarias = async () => {
   try {
@@ -74,6 +107,9 @@ const fetchUpcomingLlamadas = async () => {
   }
 };
 
+
+
+
 const handleUpdateEjecutado = (ejecutado) => {
   if(ejecutado == 'true')
 {
@@ -92,14 +128,22 @@ const handleUpdateEjecutado = (ejecutado) => {
 }
 };
 
+
+
+
+
+
 // Fetch upcoming llamadas every minute
-onMounted(() => {
+onMounted(async () => {
   fetchUpcomingLlamadas(); // Fetch on mount
   setInterval(fetchUpcomingLlamadas, 60000); // Fetch every minute
   fetchMensajes();
   fetchGestionesDiarias();
 });
 
+onMounted(async () => {
+  await fetchRecentGestiones();
+});
 
       const fetchComentarios = async () => {
         const data = { id: actual.value.codigo };
@@ -234,11 +278,26 @@ const registrar_inactivo = async (id_cliente) => {
                     <!-- Terminan modales-->
                 <div class="flex flex-row justify-center mt-5">                
                   <div class="flex flex-row">
-                    <div v-for="(dat, index) in datos">
-                      <div class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'pasado')">{{ dat.direccion }}</div>
-                      <div class="h-20 text-sm bg-yellow-400 text-center content-center border p-1 hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'pasado')">{{ dat.nombre_cliente}}</div>
-                      <div class="h-12 text-sm bg-yellow-400 text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'pasado')">{{ dat.tipo }}</div>
-                    </div>
+                    <div v-for="(dat, index) in visibleDatos.slice(0, 3)" :key="index">
+  <div
+    class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border hover:cursor-pointer"
+    @click="handleClienteSeleccionado(dat, index, 'pasado')"
+  >
+    {{ dat.direccion }}
+  </div>
+  <div
+    class="h-20 text-sm bg-yellow-400 text-center content-center border p-1 hover:cursor-pointer"
+    @click="handleClienteSeleccionado(dat, index, 'pasado')"
+  >
+    {{ dat.nombre_cliente }}
+  </div>
+  <div
+    class="h-12 text-sm bg-yellow-400 text-center content-center border hover:cursor-pointer"
+    @click="handleClienteSeleccionado(dat, index, 'pasado')"
+  >
+    {{ dat.tipo }}
+  </div>
+</div>
                     <div>
                       <div class="h-16 text-xs bg-teal-400 overflow-auto text-center content-center border">{{ actual.direccion }}</div>
                       <div class="h-20 text-sm bg-teal-400 text-center content-center border p-1">{{ actual.nombre_cliente}}</div>

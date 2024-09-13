@@ -54,6 +54,7 @@ Route::get('/permisos', [UserController::class, 'fetchPermisos'])->middleware(['
 Route::get('/tira-informativa', [UserController::class, 'getTiraInformativa'])->middleware(['auth', 'verified'])->name('getTira');
 Route::get('/gestiones-diarias', [UserController::class, 'getDailyGestiones']);
 Route::get('/llamadas-programadas', [GestionController::class, 'getScheduledCalls']);
+Route::get('/gestiones/recent', [GestionController::class, 'getRecentGestiones'])->middleware(['auth', 'verified'])->name('recent');
 
 
 

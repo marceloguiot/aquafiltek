@@ -833,4 +833,18 @@ public function getClientesPorGestionar()
     return response()->json($clientes);
 }
 
+public function getRecentGestiones(Request $request)
+{
+    $idOperador = $request->input('id_operador', 1); // Obtiene el id_operador de la solicitud, con valor predeterminado 1
+
+    // Obtener los registros de gestiones con el campo nombre_cliente de la tabla clientes
+    $gestiones = Gestion::select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion')
+        ->join('clientes', 'gestiones.codigo', '=', 'clientes.codigo') // Unir la tabla gestiones con clientes
+        ->where('gestiones.id_operador', $idOperador)
+        ->orderBy('gestiones.created_at', 'desc')
+        ->get();
+
+    return response()->json($gestiones);
+}
+
 }
