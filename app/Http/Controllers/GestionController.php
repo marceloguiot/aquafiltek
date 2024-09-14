@@ -847,4 +847,22 @@ public function getRecentGestiones(Request $request)
     return response()->json($gestiones);
 }
 
+public function getOldGestiones(Request $request)
+{
+    $userId = $request->input('user_id'); // Recibir el ID del usuario
+
+    // Calcular la fecha de hace seis meses
+    $sixMonthsAgo = now()->subMonths(6);
+
+    // Consultar los registros con más de seis meses de antigüedad
+    $gestiones = Gestion::where('gestiones.created_at', '<', $sixMonthsAgo)
+        ->join('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
+        ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion')
+        ->orderBy('gestiones.created_at', 'asc')
+        ->take(6)
+        ->get();
+
+    return response()->json($gestiones);
+}
+
 }

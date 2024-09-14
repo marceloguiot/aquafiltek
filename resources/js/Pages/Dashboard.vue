@@ -58,6 +58,21 @@ const fetchRecentGestiones = async () => {
   }
 };
 
+const fetchOldGestiones = async () => {
+  try {
+    const response = await axios.get('/gestiones/old', {
+      params: {
+        user_id: 1, // Enviar el ID del usuario como parámetro
+      },
+    });
+
+    // Actualizar el estado con los registros obtenidos
+    datos_prox.value = response.data;
+  } catch (error) {
+    console.error('Error al obtener los registros antiguos:', error);
+  }
+};
+
 // Función para actualizar los elementos visibles
 const actualizarVisibleDatos = () => {
   visibleDatos.value = datos.value.slice(0, 3); // Muestra solo los primeros 3 elementos
@@ -145,6 +160,10 @@ onMounted(async () => {
   await fetchRecentGestiones();
 });
 
+onMounted(() => {
+  fetchOldGestiones();
+});
+
       const fetchComentarios = async () => {
         const data = { id: actual.value.codigo };
   try {
@@ -188,11 +207,7 @@ const fetchPasadas = async () => {
 
 const fetchGestiones = async () => {
   try {
-    const response = await axios.get('/gestiones');
-    datos.value = ref(response.data.previas.original);
-    datos_prox.value = ref(response.data.proximas.original);
-    actual.value = ref(response.data.actual);
-
+    
   } catch (error) {
     console.error('Error al obtener las gestiones:', error);
   }
