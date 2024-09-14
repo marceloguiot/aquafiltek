@@ -31,6 +31,7 @@ const datos_prox = ref([]);
 
 const actual = ref([]);
 const visibleDatos = ref([]);
+const visibleDatosProx = ref([]);
 
 
 
@@ -80,13 +81,30 @@ const actualizarVisibleDatos = () => {
 
 
 const handleClienteSeleccionado = async (cliente, index, tipo) => {
+
+  if(tipo == 'pasado')
+{
   actual.value = cliente;
   fetchComentarios(); // Asume que esta función no es asíncrona; si lo es, añade 'await'
   visibleDatos.value = [];
   // Espera a que se obtengan los registros recientes
+  await fetchOldGestiones();
   await fetchRecentGestiones();
   // Filtra los datos después de actualizar
   datos.value = datos.value.filter((item) => item.codigo !== cliente.codigo);
+}
+else
+{
+  actual.value = cliente;
+  fetchComentarios(); // Asume que esta función no es asíncrona; si lo es, añade 'await'
+  visibleDatosProx.value = [];
+  // Espera a que se obtengan los registros recientes
+  await fetchOldGestiones();
+  await fetchRecentGestiones();
+  // Filtra los datos después de actualizar
+  datos_prox.value = datos_prox.value.filter((item) => item.codigo !== cliente.codigo);
+}
+ 
   actualizarVisibleDatos(); // Actualiza los elementos visibles
 };
 
@@ -310,19 +328,19 @@ const registrar_inactivo = async (id_cliente) => {
     class="h-12 text-sm bg-yellow-400 text-center content-center border hover:cursor-pointer"
     @click="handleClienteSeleccionado(dat, index, 'pasado')"
   >
-    {{ dat.tipo }}
+    {{ dat.estado }}
   </div>
 </div>
                     <div>
                       <div class="h-16 text-xs bg-teal-400 overflow-auto text-center content-center border">{{ actual.direccion }}</div>
                       <div class="h-20 text-sm bg-teal-400 text-center content-center border p-1">{{ actual.nombre_cliente}}</div>
-                      <div class="h-12 text-sm bg-teal-400 text-center content-center border">{{ actual.tipo }}</div>
+                      <div class="h-12 text-sm bg-teal-400 text-center content-center border">{{ actual.estado }}</div>
                     </div>
                     
                     <div v-for="(dat, index) in datos_prox">
                       <div class="h-16 text-xs bg-orange-400 overflow-auto text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.direccion }}</div>
                       <div class="h-20 text-sm bg-orange-400 text-center content-center border p-1 hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.nombre_cliente}}</div>
-                      <div class="h-12 text-sm bg-orange-400 text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.tipo }}</div>
+                      <div class="h-12 text-sm bg-orange-400 text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.estado }}</div>
                     </div>
                   </div>
                 </div>

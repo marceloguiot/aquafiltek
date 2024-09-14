@@ -838,7 +838,7 @@ public function getRecentGestiones(Request $request)
     $idOperador = $request->input('id_operador', 1); // Obtiene el id_operador de la solicitud, con valor predeterminado 1
 
     // Obtener los registros de gestiones con el campo nombre_cliente de la tabla clientes
-    $gestiones = Gestion::select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion')
+    $gestiones = Gestion::select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.estado')
         ->join('clientes', 'gestiones.codigo', '=', 'clientes.codigo') // Unir la tabla gestiones con clientes
         ->where('gestiones.id_operador', $idOperador)
         ->orderBy('gestiones.created_at', 'desc')
@@ -857,12 +857,22 @@ public function getOldGestiones(Request $request)
     // Consultar los registros con más de seis meses de antigüedad
     $gestiones = Gestion::where('gestiones.created_at', '<', $sixMonthsAgo)
         ->join('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
-        ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion')
+        ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.estado')
         ->orderBy('gestiones.created_at', 'asc')
         ->take(6)
         ->get();
 
+    // Si no hay resultados, buscar clientes con estado 'Por gestionar'
+    if ($gestiones->isEmpty()) {
+        $clientesPorGestionar = Cliente::where('estado', 'Por gestionar')
+            ->select('codigo', 'nombre_cliente', 'direccion', 'estado')
+            ->take(3)
+            ->get();
+
+        return response()->json($clientesPorGestionar);
+    }
+
+    // Si se encontraron gestiones, devolver los resultados
     return response()->json($gestiones);
 }
-
 }
