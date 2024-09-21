@@ -133,7 +133,7 @@ $gestiones = Gestion::whereNotIn('codigo', $excluirCodigos)
 
        // Definir el rango de fechas (por ejemplo, desde hoy hasta 7 días adelante)
        $fecha_inicio = $hoy;
-       $fecha_fin = $hoy->copy()->addDays(7);
+       $fecha_fin = $hoy->copy()->addDays(14);
 
        // Subconsulta para obtener los códigos de cliente que están en la tabla operador_cliente
        $excluirCodigos = OperadorCliente::pluck('codigo_cliente');
@@ -151,10 +151,11 @@ $gestiones = Gestion::whereNotIn('codigo', $excluirCodigos)
         'clientes.codigo',
         'clientes.nombre_cliente',
         'clientes.direccion',
-        'clientes.telefono'
+        'clientes.telefono',
+        'clientes.coordenadas'
     )
-    ->groupBy('clientes.codigo', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono')
-    ->take(3)
+    ->groupBy('clientes.codigo', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.telefono','clientes.coordenadas')
+    ->take(7)
     ->get();
 
        if ($gestiones->isEmpty()) {
@@ -875,4 +876,30 @@ public function getOldGestiones(Request $request)
     // Si se encontraron gestiones, devolver los resultados
     return response()->json($gestiones);
 }
+
+public function getGestionesCalendario(Request $request)
+{
+    $userId = $request->input('user_id'); // Recibir el ID del usuario
+
+    $hoy = Carbon::today();
+
+    // Definir el rango de fechas (por ejemplo, desde hoy hasta 7 días adelante)
+    $fecha_inicio = $hoy;
+    $fecha_fin = $hoy->copy()->addDays(7);
+   
+
+    // Consultar los registros con más de seis meses de antigüedad
+    $gestiones = Gestion::where('gestiones.fecha', '<', $fecha_fin)
+        ->where('gestiones.fecha', '>=', $fecha_inicio)
+        ->join('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
+        ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.estado')
+        ->orderBy('gestiones.fecha', 'asc')
+        ->take(6)
+        ->get();
+
+
+    // Si se encontraron gestiones, devolver los resultados
+    return response()->json($gestiones);
+}
+
 }

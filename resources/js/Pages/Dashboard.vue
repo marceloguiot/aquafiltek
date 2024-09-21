@@ -77,6 +77,7 @@ const fetchOldGestiones = async () => {
 // Función para actualizar los elementos visibles
 const actualizarVisibleDatos = () => {
   visibleDatos.value = datos.value.slice(0, 3); // Muestra solo los primeros 3 elementos
+  visibleDatosProx.value = datos_prox.value.slice[0, 3];
 };
 
 
