@@ -43,7 +43,13 @@ Route::get('/previas_gestiones', [GestionController::class, 'getUltimasGestiones
 Route::get('/postventa', function () { return Inertia::render('Postventa');})->middleware(['auth', 'verified'])->name('postventa');
 Route::get('/gestiones-aceptadas', [GestionController::class, 'getGestionesAceptadas'])->middleware(['auth', 'verified'])->name('gestiones-aceptadas');
 Route::get('/cliente-nombre/{id_gestion}', [GestionController::class, 'getClienteNombre'])->middleware(['auth', 'verified'])->name('cliente-nombre');
-Route::get('/admin', function () { return Inertia::render('VistaAdm');})->middleware(['auth', 'verified'])->name('admin');
+Route::get('/admin', function () {
+    if (Auth::user()->admin == 1) {
+        return Inertia::render('VistaAdm');
+    }
+    
+    return redirect('/'); // Redirige a la página de inicio si no es admin
+})->middleware(['auth', 'verified'])->name('admin');
 Route::get('/users', [UserController::class, 'index'])->middleware(['auth', 'verified'])->name('users');
 Route::get('api/provincias', [ProvinciaController::class, 'index'])->middleware(['auth', 'verified'])->name('provincias');
 Route::get('api/cantones', [CantonController::class, 'index'])->middleware(['auth', 'verified'])->name('cantones');

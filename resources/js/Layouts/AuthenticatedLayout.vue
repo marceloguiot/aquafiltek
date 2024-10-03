@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -8,6 +9,10 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+
+const { props } = usePage();
+// Verificar si el usuario es administrador
+const isAdmin = computed(() => $page.props.auth.user.admin === 1);
 </script>
 
 <template>
@@ -55,6 +60,10 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
                                 <NavLink :href="route('mapa')" :active="route().current('mapa')">
                                     Gestión por mapa
+                                </NavLink>
+                                                                <!-- Vista Administrador: Solo para usuarios con admin == 1 -->
+                                                                <NavLink v-if="isAdmin" :href="route('admin')" :active="route().current('admin')">
+                                    Vista Administrador
                                 </NavLink>
                             </div>
                         </div>
