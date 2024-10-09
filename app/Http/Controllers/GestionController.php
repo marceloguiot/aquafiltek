@@ -858,7 +858,7 @@ public function getOldGestiones(Request $request)
     // Consultar los registros con más de seis meses de antigüedad
     $gestiones = Gestion::where('gestiones.created_at', '<', $sixMonthsAgo)
         ->join('clientes', 'gestiones.codigo', '=', 'clientes.codigo')
-        ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.estado')
+        ->select('gestiones.*', 'clientes.nombre_cliente', 'clientes.direccion', 'clientes.estado', 'clientes.telefono', 'clientes.telefono_oficina','clientes.celular1','clientes.celular2')
         ->orderBy('gestiones.created_at', 'asc')
         ->take(6)
         ->get();
@@ -866,7 +866,7 @@ public function getOldGestiones(Request $request)
     // Si no hay resultados, buscar clientes con estado 'Por gestionar'
     if ($gestiones->isEmpty()) {
         $clientesPorGestionar = Cliente::where('estado', 'Por gestionar')
-            ->select('codigo', 'nombre_cliente', 'direccion', 'estado')
+            ->select('codigo', 'nombre_cliente', 'direccion', 'estado', 'telefono', 'telefono_oficina', 'celular1', 'celular2')
             ->take(3)
             ->get();
 

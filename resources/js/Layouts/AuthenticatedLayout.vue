@@ -12,7 +12,6 @@ const showingNavigationDropdown = ref(false);
 
 const { props } = usePage();
 // Verificar si el usuario es administrador
-const isAdmin = computed(() => $page.props.auth.user.admin === 1);
 </script>
 
 <template>
@@ -61,10 +60,7 @@ const isAdmin = computed(() => $page.props.auth.user.admin === 1);
                                 <NavLink :href="route('mapa')" :active="route().current('mapa')">
                                     Gestión por mapa
                                 </NavLink>
-                                                                <!-- Vista Administrador: Solo para usuarios con admin == 1 -->
-                                                                <NavLink v-if="isAdmin" :href="route('admin')" :active="route().current('admin')">
-                                    Vista Administrador
-                                </NavLink>
+ 
                             </div>
                         </div>
 

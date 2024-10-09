@@ -7,7 +7,6 @@ import Modals from '@/Components/Modals.vue';
 import ModalGestion from '@/Components/ModalGestion.vue';
 import ClienteInfo from '@/Components/ClienteInfo.vue';
 import ComentariosHistorico from '@/Components/ComentariosHistorico.vue';
-import { usePage } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 
 import {
@@ -19,7 +18,7 @@ import {
 } from '@headlessui/vue';
 import axios from 'axios';
 
-const { props } = usePage();
+
 const isOpenLlamada = ref(false);
 const isOpenInac = ref(false);
 const mensajes = ref([]);
@@ -333,15 +332,15 @@ const registrar_inactivo = async (id_cliente) => {
   </div>
 </div>
                     <div>
-                      <div class="h-16 text-xs bg-teal-400 overflow-auto text-center content-center border">{{ actual.direccion }}</div>
-                      <div class="h-20 text-sm bg-teal-400 text-center content-center border p-1">{{ actual.nombre_cliente}}</div>
-                      <div class="h-12 text-sm bg-teal-400 text-center content-center border">{{ actual.estado }}</div>
+                      <div class="h-16 min-w-32 max-w-48 text-xs bg-teal-400 overflow-auto text-center content-center border">{{ actual.direccion }}</div>
+                      <div class="h-20 min-w-32 max-w-48 text-sm bg-teal-400 text-center content-center border p-1">{{ actual.nombre_cliente}}</div>
+                      <div class="h-12 min-w-32 max-w-48 text-sm bg-teal-400 text-center content-center border">{{ actual.estado }}</div>
                     </div>
                     
                     <div v-for="(dat, index) in datos_prox">
-                      <div class="h-16 text-xs bg-orange-400 overflow-auto text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.direccion }}</div>
-                      <div class="h-20 text-sm bg-orange-400 text-center content-center border p-1 hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.nombre_cliente}}</div>
-                      <div class="h-12 text-sm bg-orange-400 text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.estado }}</div>
+                      <div class="h-16 text-xs max-w-48 bg-orange-400 overflow-auto text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.direccion }}</div>
+                      <div class="h-20 text-sm max-w-48 bg-orange-400 text-center content-center border p-1 hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.nombre_cliente}}</div>
+                      <div class="h-12 text-sm max-w-48 bg-orange-400 text-center content-center border hover:cursor-pointer" @click="handleClienteSeleccionado(dat, index, 'proximo')">{{ dat.estado }}</div>
                     </div>
                   </div>
                 </div>
