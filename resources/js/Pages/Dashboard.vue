@@ -313,19 +313,19 @@ const registrar_inactivo = async (id_cliente) => {
                   <div class="flex flex-row">
                     <div v-for="(dat, index) in visibleDatos.slice(0, 3)" :key="index">
   <div
-    class="h-16 text-xs bg-yellow-400 overflow-auto text-center content-center border hover:cursor-pointer"
+    class="h-16 text-xs min-w-32 max-w-48 bg-yellow-400 overflow-auto text-center content-center border hover:cursor-pointer"
     @click="handleClienteSeleccionado(dat, index, 'pasado')"
   >
     {{ dat.direccion }}
   </div>
   <div
-    class="h-20 text-sm bg-yellow-400 text-center content-center border p-1 hover:cursor-pointer"
+    class="h-20 text-sm min-w-32 max-w-48 bg-yellow-400 text-center content-center border p-1 hover:cursor-pointer"
     @click="handleClienteSeleccionado(dat, index, 'pasado')"
   >
     {{ dat.nombre_cliente }}
   </div>
   <div
-    class="h-12 text-sm bg-yellow-400 text-center content-center border hover:cursor-pointer"
+    class="h-12 text-sm min-w-32 max-w-48 bg-yellow-400 text-center content-center border hover:cursor-pointer"
     @click="handleClienteSeleccionado(dat, index, 'pasado')"
   >
     {{ dat.estado }}
