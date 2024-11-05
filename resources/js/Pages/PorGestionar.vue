@@ -16,6 +16,8 @@ import ComentariosHistorico from '@/Components/ComentariosHistorico.vue';
   const loading = ref(true);
   const gestionesPast = ref([]);
   
+  const searchValue = ref('');
+  
   const actual = ref([]);
   // Función para obtener los clientes por gestionar
   const fetchClientesPorGestionar = async () => {
@@ -75,6 +77,24 @@ import ComentariosHistorico from '@/Components/ComentariosHistorico.vue';
   { data: 'estado', title: 'Estado' },
   { data: 'id', title: 'Acciones' },
 ];
+
+const headers = [
+   { text: "Código", value: "codigo", sortable: true},
+   { text: "Nombre", value: "nombre_cliente", sortable: true},
+   { text: "Dirección", value: "direccion", sortable: true},
+   { text: "Estado", value: "estado", sortable: true},
+   { text: "Acciones", value: "id", sortable: true},
+     ];
+
+     const headclass = () =>
+{
+  return 'text-[16px]';
+}
+const bodyclass = () =>
+{
+  return 'text-[15px]';
+}
+
   </script>
 <template>
      <Head title="Por gestionar" />
@@ -85,14 +105,34 @@ import ComentariosHistorico from '@/Components/ComentariosHistorico.vue';
   
       <div v-if="loading" class="text-center">Cargando clientes...</div>
 
+      <div class="flex flex-row">
+        <label>Buscar:</label>
+        <input type="text" class="h-6 text-sm rounded-sm mb-5 ml-2" v-model="searchValue">
+      </div>
+    
+    <EasyDataTable
+            :header-item-class-name="headclass"
+            :body-item-class-name="bodyclass"
+            :rows-per-page="10"
+            buttons-pagination
+            :headers= "headers"
+            :items="clientes"
+            alternating
+            rowsPerPageMessage="Registros por página"
+		        rowsOfPageSeparatorMessage="de"
+            emptyMessage="No hay registros que mostrar"
+            border-cell
+            :search-value="searchValue"
+            >
+    
+            <template #item-id="cliente">
+              <span v-if="cliente.id === actual.id">Cliente seleccionado</span>
+       <button v-else class="bg-blue-500 text-white px-2 py-1 rounded mx-auto border border-gary-700" @click="seleccionar(cliente)">Gestionar</button>
+            </template>
+      
+            </EasyDataTable>
 
-    <DataTable :data="clientes" :columns="columns" class="border border-gray-700">
-      <template #column-4="id">
-       <span v-if="id.rowData.id === actual.id">Cliente seleccionado</span>
-       <button v-else class="bg-blue-500 text-white px-2 py-1 rounded mx-auto border border-gary-700" @click="seleccionar(id.rowData)">Gestionar</button>
 
-      </template>
-    </DataTable>
 
       <ModalGestion  :actual="actual"  :key="actual.codigo" :scope="'gestion'" @updateEjecutado="handleUpdateEjecutado" />
       <div class="flex flex-col">
